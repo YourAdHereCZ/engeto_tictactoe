@@ -113,23 +113,35 @@ namespace tictactoe
             // TODO: prompt: who starts next round?
             // default: no change
             // choices: no change / flip / winner starts / loser starts / random
+            
+            Game game;
+            bool playAgain = true;
 
             // game loop
-            Game game = new Game(playerOne, playerTwo, firstPlayerStarts);
-            game.PrintBoard();
-
-            while (!game.isWon && !game.isTie)
+            while (playAgain)
             {
-                game.PlayNextTurn();
+                game = new Game(playerOne, playerTwo, firstPlayerStarts);
                 game.PrintBoard();
-                game.UpdateIsWonOrTie();
-                game.SwitchCurrentPlayer();
+
+                while (!game.isWon && !game.isTie)
+                {
+                    game.PlayNextTurn();
+                    game.PrintBoard();
+                    game.UpdateIsWonOrTie();
+                    game.SwitchCurrentPlayer();
+                }
+                game.SwitchCurrentPlayer(); // when the game is won, switch back to the winner
+
+                Console.WriteLine(game.isWon ? game.GetCurrentPlayer().name + " wins!" : "It's a tie!");
+                Console.Write("Play again? Y/n ");
+
+                response = Console.ReadLine().ToLower();
+                if (response == "n" || response == "no")
+                {
+                    playAgain = false;
+                    Console.WriteLine("Thank you for playing! Come again!");
+                }
             }
-            game.SwitchCurrentPlayer(); // when the game is won, switch back to the winner
-
-            Console.WriteLine(game.isWon ? game.GetCurrentPlayer().name + " has won!" : "The game was a tie!");
-
-            // TODO: play again?
         }
     }
 }

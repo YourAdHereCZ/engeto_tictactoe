@@ -136,8 +136,7 @@ namespace tictactoe
             return isFirstPlayersTurn ? player1 : player2;
         }
 
-        // does the opposite than the above,
-        // i.e. returns the player whose turn it currently ISN'T
+        // conversely, returns the player whose turn it currently isn't
         public PlayerBase GetOtherPlayer()
         {
             return isFirstPlayersTurn ? player2 : player1;
@@ -173,7 +172,7 @@ namespace tictactoe
             bool isLegal;
             do
             {
-                nextMove = this.ReadMoveFromConsole();
+                nextMove = this.ReadHumanMoveFromConsole();
                 isLegal = IsLegalMove(nextMove);
 
                 if (!isLegal)
@@ -186,7 +185,7 @@ namespace tictactoe
             return nextMove;
         }
 
-        public (int, int) ReadMoveFromConsole()
+        public (int, int) ReadHumanMoveFromConsole()
         {
             bool tryParse;
             int row;
