@@ -15,8 +15,8 @@ namespace tictactoe
             { _EMPTY_SYMBOL, _EMPTY_SYMBOL, _EMPTY_SYMBOL }
         };
 
-        public bool isFirstPlayersTurn { get; set; }
-        public bool isWon = false;
+        private bool isFirstPlayersTurn { get; set; }
+        public bool isWon { get; set; } = false;
         public bool isTie = false;
 
         private PlayerBase player1;
@@ -75,11 +75,6 @@ namespace tictactoe
 
             return legalMoves;
         }
-
-        //public override (int, int) GetNextMove()
-        //{
-        //    var moves = GetAllLegalMoves();
-        //}
 
         public void UpdateIsWonOrTie()
         {
@@ -148,20 +143,50 @@ namespace tictactoe
             return isFirstPlayersTurn ? player2 : player1;
         }
 
-
-        public bool UpdateBoard((int, int) coordinates)
+        public void UpdateBoard((int, int) coordinates)
         {
             if (!IsLegalMove(coordinates))
             {
-                return false;
+                return;
             }
 
             char symbol = GetCurrentPlayer().symbol;
-            gameBoard[coordinates.Item1 - 1, coordinates.Item2 - 1] = symbol;
-            return true;
+            gameBoard[coordinates.Item1 - 1, coordinates.Item2 - 1] = symbol;            
         }
 
-        public (int, int) GetNextMove()
+        public (int, int) PickRandomLegalMove()
+        {
+            var moves = GetAllLegalMoves();
+            int rand = rnd.Next(moves.Count);
+            (int, int) randomLegalMove = moves[rand];
+            return randomLegalMove;
+        }
+
+        public (int, int) GetNextMoveFromComputer()
+        {
+            return PickRandomLegalMove();
+        }
+
+        public (int, int) GetNextMoveFromHuman()
+        {
+            (int, int) nextMove;
+            bool isLegal;
+            do
+            {
+                nextMove = this.ReadMoveFromConsole();
+                isLegal = IsLegalMove(nextMove);
+
+                if (!isLegal)
+                {
+                    Console.WriteLine("Illegal move.");
+                }
+            }
+            while (!IsLegalMove(nextMove));
+
+            return nextMove;
+        }
+
+        public (int, int) ReadMoveFromConsole()
         {
             bool tryParse;
             int row;
@@ -191,41 +216,13 @@ namespace tictactoe
             return (row, col);
         }
 
-        public (int, int) GetRandomLegalMove()
-        {
-            var moves = GetAllLegalMoves();
-            int rand = rnd.Next(moves.Count);
-            (int, int) randomLegalMove = moves[rand];
-            return randomLegalMove;
-        }
-
-        public (int, int) GetNextMoveFromComputer()
-        {
-            //throw new NotImplementedException();
-            return GetRandomLegalMove();
-        }
-
-        public (int, int) GetNextMoveFromHuman()
-        {
-            (int, int) nextMove;
-            bool isLegal;
-            do
-            {
-                nextMove = this.GetNextMove();
-                isLegal = IsLegalMove(nextMove);
-
-                if (!isLegal)
-                {
-                    Console.WriteLine("Illegal move.");
-                }
-            }
-            while (!IsLegalMove(nextMove));
-
-            return nextMove;
-        }
-
         public void PlayNextTurn()
         {
+            if (!GetCurrentPlayer().IsHuman())
+            {
+                Console.WriteLine("Press any key to let " + GetCurrentPlayer().name + " play.");
+                Console.ReadKey();
+            }
             Console.WriteLine(GetCurrentPlayer().name + "'s turn");
             (int, int) nextMove = GetCurrentPlayer().IsHuman() ? GetNextMoveFromHuman() : GetNextMoveFromComputer();
             UpdateBoard(nextMove);
