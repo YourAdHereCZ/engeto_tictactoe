@@ -9,9 +9,20 @@ namespace tictactoe
             // greet
             Console.WriteLine("Welcome to TicTacToe!");
 
-            // TODO: ask about type of game - human vs human, human vs PC, PC vs PC
-
+            // prompt: game mode
             string response;
+            int humanPlayerCount = 1;
+            Console.Write("Would you like to play against the (C)omputer or another (p)layer,\nor (w)atch two computer players pitted against each other? C/p/w ");
+            response = Console.ReadLine().Trim(' ').ToLower();
+            if (response == "p" || response == "player")
+            {
+                humanPlayerCount = 2;
+            }
+            else if (response == "w" || response == "watch")
+            {
+                humanPlayerCount = 0;
+            }
+
             string playerOneName = "Player 1";
             string playerTwoName = "Player 2";
 
@@ -59,7 +70,7 @@ namespace tictactoe
                 {
                     Console.WriteLine("More than one character specified. The first character (\'" + playerTwoSymbol + "\') will be used.");
                 }
-            }            
+            }
 
             // difficulty ideas: 1: easiest (picks wrong every time?)
             //                   2: easy (picks random legal move) (easiest to implement)
@@ -68,8 +79,26 @@ namespace tictactoe
             //                   5: impossible (always plays a perfect game by the ruleset)
 
             // create players
-            PlayerBase playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
-            PlayerBase playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName);
+            PlayerBase playerOne;
+            PlayerBase playerTwo;
+
+            switch (humanPlayerCount)
+            {
+                case 0:
+                    playerOne = new PlayerComputer(playerOneSymbol, playerOneName);
+                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName);
+                    break;
+                case 1:
+                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
+                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName);
+                    break;
+                case 2:
+                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
+                    playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }             
 
             // prompt: who starts?
             // default: player1
