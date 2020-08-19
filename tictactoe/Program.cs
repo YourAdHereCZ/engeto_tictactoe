@@ -23,10 +23,9 @@ namespace tictactoe
                 humanPlayerCount = 0;
             }
 
+            // prompt: choose names?
             string playerOneName = "Player 1";
             string playerTwoName = "Player 2";
-
-            // prompt: choose names?
             Console.Write("Would you like to select players' names? y/N ");
             response = Console.ReadLine().Trim(' ').ToLower();
             if (response == "y" || response == "yes")
@@ -38,10 +37,9 @@ namespace tictactoe
                 playerTwoName = Console.ReadLine();
             }
 
+            // prompt: choose symbols?
             char playerOneSymbol = 'X';
             char playerTwoSymbol = 'O';
-
-            // prompt: choose symbols?
             Console.Write("Would you like to select players' symbols? y/N ");
             response = Console.ReadLine().ToLower();
             if (response == "y" || response == "yes")
