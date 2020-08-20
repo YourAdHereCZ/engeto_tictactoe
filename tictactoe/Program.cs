@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.Design;
+using System.Threading;
 
 namespace tictactoe
 {
@@ -8,19 +10,28 @@ namespace tictactoe
         {
             // greet
             Console.WriteLine("Welcome to TicTacToe!");
-
+        Menu:
             // prompt: game mode
             string response;
             int humanPlayerCount = 1;
-            Console.Write("Would you like to play against the (C)omputer or another (p)layer,\nor (w)atch two computer players pitted against each other? C/p/w ");
+            Console.WriteLine("Choose an option by typing the highlighted letter:" +
+                "\n1: play against a (c)omputer opponent (default)" +
+                "\n2: play against another (p)layer" +
+                "\n3: (w)atch two computer players" +
+                "\n4: (q)uit");
             response = Console.ReadLine().Trim(' ').ToLower();
-            if (response == "p" || response == "player")
+            if (response == "2" || response == "p" || response == "player")
             {
                 humanPlayerCount = 2;
             }
-            else if (response == "w" || response == "watch")
+            else if (response == "3" || response == "w" || response == "watch")
             {
                 humanPlayerCount = 0;
+            }
+            else if (response == "4" || response == "q" || response == "quit")
+            {
+                Console.WriteLine("Come again!");
+                return;
             }
 
             // prompt: choose names?
@@ -83,12 +94,12 @@ namespace tictactoe
             switch (humanPlayerCount)
             {
                 case 0:
-                    playerOne = new PlayerComputer(playerOneSymbol, playerOneName, false);
-                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName, false);
+                    playerOne = new PlayerAIRandom(playerOneSymbol, playerOneName, false);
+                    playerTwo = new PlayerAIRandom(playerTwoSymbol, playerTwoName, false);
                     break;
                 case 1:
                     playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
-                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName, false);
+                    playerTwo = new PlayerAIRandom(playerTwoSymbol, playerTwoName, false);
                     break;
                 case 2:
                     playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
@@ -121,25 +132,31 @@ namespace tictactoe
                 game = new Game(playerOne, playerTwo, firstPlayerStarts);
                 game.PrintBoard();
 
-                while (!game.isWon && !game.isTie)
+                while (!game.isFinal)
                 {
                     game.PlayNextTurn();
                     game.PrintBoard();
-                    game.UpdateIsWonOrTie();
+                    game.UpdateIsWonAndIsFinal();
                     game.SwitchPlayers();
                 }
                 game.SwitchPlayers(); // when the game is won, switch back to the winner
 
                 Console.WriteLine(game.isWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
-                Console.Write("Play again? Y/n ");
+                Console.Write("Play again? (Y)es / (n)o / (c)hange mode");
 
                 response = Console.ReadLine().ToLower();
                 if (response == "n" || response == "no")
                 {
                     playAgain = false;
-                    Console.WriteLine("Thank you for playing! Come again!");
+                }
+                else if(response == "c" || response == "change")
+                {
+                    goto Menu;
+                    // TODO: this is really ugly but it's just a quick hack to play again
+                    // 
                 }
             }
+            Console.WriteLine("Thank you for playing! Come again!");
         }
     }
 }

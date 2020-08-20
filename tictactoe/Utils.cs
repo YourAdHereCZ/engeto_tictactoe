@@ -1,27 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace tictactoe
 {
     public class Utils
     {
-        internal static string FlattenBoard(char[,] gameBoard)
+        internal static char[] FlattenBoard(char[,] gameBoard)
         {
             char[] result = new char[9];
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < gameBoard.GetLength(0); i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < gameBoard.GetLength(1); j++)
                 {
-                    result[i * 3 + j] = gameBoard[i, j];
+                    result[i * gameBoard.GetLength(0) + j] = gameBoard[i, j];
                 }
             }
-            return new string(result);
-        }
-
-        internal static char[,] InflateBoard(string flattenedBoard)
-        {
-            throw new NotImplementedException();
+            return result;
         }
 
         internal static bool IsLegalMove((int, int) move, char[,] gameBoard)
@@ -41,9 +36,40 @@ namespace tictactoe
             {
                 return false;
             }
-
             return true;
+        }
 
+        internal static bool IsFull(char[,] gameBoard)
+        {
+            for (int i = 0; i < gameBoard.GetLength(0); i++)
+            {
+                for (int j = 0; j < gameBoard.GetLength(1); j++)
+                {
+                    if (gameBoard[i, j] == Game.EmptySymbol)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        internal static bool IsWon(char[,] gameBoard, char player)
+        {
+            char[] flat = FlattenBoard(gameBoard);
+
+            if ((flat[0] == player && flat[1] == player && flat[2] == player) 
+                || (flat[3] == player && flat[4] == player && flat[5] == player)
+                || (flat[6] == player && flat[7] == player && flat[8] == player)
+                || (flat[0] == player && flat[3] == player && flat[6] == player)
+                || (flat[1] == player && flat[4] == player && flat[7] == player)
+                || (flat[2] == player && flat[5] == player && flat[8] == player)
+                || (flat[0] == player && flat[4] == player && flat[8] == player)
+                || (flat[2] == player && flat[4] == player && flat[6] == player))
+            {
+                return true;
+            }
+            return false;
         }
 
         internal static List<(int, int)> GetAllLegalMoves(char[,] gameBoard)
@@ -61,7 +87,6 @@ namespace tictactoe
                     }
                 }
             }
-
             return legalMoves;
         }
     }

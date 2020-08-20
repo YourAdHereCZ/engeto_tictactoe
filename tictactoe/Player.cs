@@ -13,6 +13,6 @@
             IsHuman = isHuman;
         }
 
-        public abstract (int, int) GetNextMove(char[,] gameBoard);
+        public abstract (int, int) GetNextMove(char[,] gameBoard, char player, char opponent);
     }
 }

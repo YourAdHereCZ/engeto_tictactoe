@@ -8,13 +8,13 @@ namespace tictactoe
         {
         }
 
-        public override (int, int) GetNextMove(char[,] gameBoard)
+        public override (int, int) GetNextMove(char[,] gameBoard, char _, char __)
         {
             (int, int) nextMove;
             bool isLegal;
             do
             {
-                nextMove = this.ReadHumanMoveFromConsole();
+                nextMove = ReadHumanMoveFromInput();
                 isLegal = Utils.IsLegalMove(nextMove, gameBoard);
 
                 if (!isLegal)
@@ -27,7 +27,7 @@ namespace tictactoe
             return nextMove;
         }
 
-        public (int, int) ReadHumanMoveFromConsole()
+        private (int, int) ReadHumanMoveFromInput()
         {
             bool tryParse;
             int row;
@@ -37,7 +37,7 @@ namespace tictactoe
                 tryParse = int.TryParse(Console.ReadLine(), out row);
                 if (!tryParse)
                 {
-                    Console.WriteLine("You need to specify a positive integer. ");
+                    Console.WriteLine("You need to specify an integer. ");
                 }
             }
             while (!tryParse);
@@ -49,13 +49,14 @@ namespace tictactoe
                 tryParse = int.TryParse(Console.ReadLine(), out col);
                 if (!tryParse)
                 {
-                    Console.Write("You need to specify a positive integer. ");
+                    Console.Write("You need to specify an integer. ");
                 }
             }
             while (!tryParse);
 
-            return (row- 1 , col - 1);
+            return (row - 1 , col - 1);
             // moves are expected from the player as 1-indexed but stored as 0-indexed
+            // so this is the only place we need to do any "off by one" magic
         }
     }
 }
