@@ -15,8 +15,8 @@ namespace tictactoe
 
         public bool isFirstPlayersTurn { get; private set; } = true;
 
-        public bool isWon { get; private set; } = false;
-        public bool isFinal { get; private set; } = false;
+        public bool IsWon { get { return Utils.IsWon(GameBoard, Player1.Symbol) || Utils.IsWon(GameBoard, Player2.Symbol); } }
+        public bool IsFinal { get { return Utils.IsFull(GameBoard) || IsWon; } }
 
         public Player Player1 { get; private set; }
         public Player Player2 { get; private set; }
@@ -26,12 +26,6 @@ namespace tictactoe
             Player1 = player1;
             Player2 = player2;
             this.isFirstPlayersTurn = isFirstPlayersTurn;
-        }
-
-        public void UpdateIsWonAndIsFinal()
-        {
-            isWon = Utils.IsWon(GameBoard, GetCurrentPlayer().Symbol) || Utils.IsWon(GameBoard, GetOtherPlayer().Symbol);
-            isFinal = Utils.IsFull(GameBoard) || isWon;
         }
 
         internal void SwitchPlayers()

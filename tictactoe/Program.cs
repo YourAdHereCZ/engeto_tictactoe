@@ -132,16 +132,16 @@ namespace tictactoe
                 game = new Game(playerOne, playerTwo, firstPlayerStarts);
                 game.PrintBoard();
 
-                while (!game.isFinal)
+                while (!game.IsFinal)
                 {
                     game.PlayNextTurn();
                     game.PrintBoard();
-                    game.UpdateIsWonAndIsFinal();
+                    //game.UpdateIsWonAndIsFinal();
                     game.SwitchPlayers();
                 }
                 game.SwitchPlayers(); // when the game is won, switch back to the winner
 
-                Console.WriteLine(game.isWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
+                Console.WriteLine(game.IsWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
                 Console.Write("Play again? (Y)es / (n)o / (c)hange mode");
 
                 response = Console.ReadLine().ToLower();
