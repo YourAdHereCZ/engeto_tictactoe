@@ -2,23 +2,60 @@
 
 namespace tictactoe
 {
-    public class PlayerHuman : PlayerBase
+    public class PlayerHuman : Player
     {
-        public PlayerHuman(char symbol) : base(symbol)
+        public PlayerHuman(char symbol, string name, bool isHuman) : base(symbol, name, isHuman)
         {
         }
 
-        public PlayerHuman(char symbol, string name) : base(symbol)
+        public override (int, int) GetNextMove(char[,] gameBoard)
         {
-            if (name != "")
+            (int, int) nextMove;
+            bool isLegal;
+            do
             {
-                this.name = name;
-            }            
-        }        
+                nextMove = this.ReadHumanMoveFromConsole();
+                isLegal = Utils.IsLegalMove(nextMove, gameBoard);
 
-        public override bool IsHuman()
+                if (!isLegal)
+                {
+                    Console.WriteLine("Illegal move.");
+                }
+            }
+            while (!Utils.IsLegalMove(nextMove, gameBoard));
+
+            return nextMove;
+        }
+
+        public (int, int) ReadHumanMoveFromConsole()
         {
-            return true;
+            bool tryParse;
+            int row;
+            do
+            {
+                Console.Write("Row: ");
+                tryParse = int.TryParse(Console.ReadLine(), out row);
+                if (!tryParse)
+                {
+                    Console.WriteLine("You need to specify a positive integer. ");
+                }
+            }
+            while (!tryParse);
+
+            int col;
+            do
+            {
+                Console.Write("Column: ");
+                tryParse = int.TryParse(Console.ReadLine(), out col);
+                if (!tryParse)
+                {
+                    Console.Write("You need to specify a positive integer. ");
+                }
+            }
+            while (!tryParse);
+
+            return (row- 1 , col - 1);
+            // moves are expected from the player as 1-indexed but stored as 0-indexed
         }
     }
 }

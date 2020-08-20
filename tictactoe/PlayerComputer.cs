@@ -2,25 +2,25 @@
 
 namespace tictactoe
 {
-    public class PlayerComputer : PlayerBase
+    public class PlayerComputer : Player
     {
-        static Random rnd = new Random();
+        static readonly Random rnd = new Random();
 
-        public PlayerComputer(char symbol) : base(symbol)
+        public PlayerComputer(char symbol, string name, bool isHuman) : base(symbol, name, isHuman)
         {
         }
 
-        public PlayerComputer(char symbol, string name) : base(symbol)
+        public override (int, int) GetNextMove(char[,] gameBoard)
         {
-            if (name != "")
-            {
-                this.name = name;
-            }
+            return PickRandomLegalMove(gameBoard);
         }
 
-        public override bool IsHuman()
+        public (int, int) PickRandomLegalMove(char[,] gameBoard)
         {
-            return false;
+            var moves = Utils.GetAllLegalMoves(gameBoard);
+            int rand = rnd.Next(moves.Count);
+            (int, int) randomLegalMove = moves[rand];
+            return randomLegalMove;
         }
     }
 }

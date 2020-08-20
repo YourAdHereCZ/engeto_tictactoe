@@ -1,90 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace tictactoe
 {
-    public class Game
+    public sealed class Game
     {
-        private protected const char _EMPTY_SYMBOL = ' ';
+        private const char emptySymbol = ' ';
+        public static char EmptySymbol { get => emptySymbol; }
 
-        private static Random rnd = new Random();
-
-        public char[,] gameBoard = new char[3, 3] {
-            { _EMPTY_SYMBOL, _EMPTY_SYMBOL, _EMPTY_SYMBOL },
-            { _EMPTY_SYMBOL, _EMPTY_SYMBOL, _EMPTY_SYMBOL },
-            { _EMPTY_SYMBOL, _EMPTY_SYMBOL, _EMPTY_SYMBOL }
+        public char[,] GameBoard { get; private set; } = new char[3, 3] {
+            { EmptySymbol, EmptySymbol, EmptySymbol },
+            { EmptySymbol, EmptySymbol, EmptySymbol },
+            { EmptySymbol, EmptySymbol, EmptySymbol }
         };
 
-        private bool isFirstPlayersTurn { get; set; }
-        public bool isWon { get; set; } = false;
-        public bool isTie = false;
+        public bool isFirstPlayersTurn { get; private set; } = true;
+        public bool isWon { get; private set; } = false;
+        public bool isTie { get; private set; } = false;
 
-        private PlayerBase player1;
-        private PlayerBase player2;
+        public Player Player1 { get; private set; }
+        public Player Player2 { get; private set; }
         
-        public Game(PlayerBase player1, PlayerBase player2, bool isFirstPlayersTurn)
+
+        public Game(Player player1, Player player2, bool isFirstPlayersTurn)
         {   
-            this.player1 = player1;
-            this.player2 = player2;
+            Player1 = player1;
+            Player2 = player2;
             this.isFirstPlayersTurn = isFirstPlayersTurn;
-        }
-
-        public Game(PlayerBase player1, PlayerBase player2, bool isFirstPlayersTurn, char[,] gameBoard) 
-            : this(player1, player2, isFirstPlayersTurn)
-        {
-            this.gameBoard = gameBoard;
-        }
-
-        private bool IsLegalMove((int, int) coordinates)
-        {
-            int row = coordinates.Item1;
-            int col = coordinates.Item2;
-
-            if (row < 1 || row > gameBoard.GetLength(0))
-            {
-                return false;
-            }
-            if (col < 1 || col > gameBoard.GetLength(1))
-            {
-                return false;
-            }
-            if (gameBoard[row-1, col-1] != _EMPTY_SYMBOL)
-            {
-                return false;
-            }
-
-            return true;
-
-        }
-
-        private List<(int, int)> GetAllLegalMoves()
-        {
-            List<(int, int)> legalMoves = new List<(int, int)>();
-            (int, int) move;
-            for (int i = 1; i <= gameBoard.GetLength(0); i++)
-            {
-                for (int j = 1; j <= gameBoard.GetLength(1); j++)
-                {
-                    move = (i, j);
-                    if (IsLegalMove(move))
-                    {
-                        legalMoves.Add(move);
-                    }
-                }
-            }
-
-            return legalMoves;
         }
 
         public void UpdateIsWonOrTie()
         {
-            PlayerBase potentialWinner = GetCurrentPlayer();
-            char symbol = potentialWinner.symbol;
+            Player potentialWinner = GetCurrentPlayer();
+            char symbol = potentialWinner.Symbol;
 
             //rows
-            for (int i = 0; i < gameBoard.GetLength(0); i++)
+            for (int i = 0; i < GameBoard.GetLength(0); i++)
             {
-                if (gameBoard[i,0] == symbol && gameBoard[i, 1] == symbol && gameBoard[i, 2] == symbol)
+                if (GameBoard[i,0] == symbol && GameBoard[i, 1] == symbol && GameBoard[i, 2] == symbol)
                 {
                     isWon = true;
                     return;
@@ -92,9 +44,9 @@ namespace tictactoe
             }
 
             //cols
-            for (int i = 0; i < gameBoard.GetLength(0); i++)
+            for (int i = 0; i < GameBoard.GetLength(0); i++)
             {
-                if (gameBoard[0, i] == symbol && gameBoard[1, i] == symbol && gameBoard[2, i] == symbol)
+                if (GameBoard[0, i] == symbol && GameBoard[1, i] == symbol && GameBoard[2, i] == symbol)
                 {
                     isWon = true;
                     return;
@@ -102,9 +54,9 @@ namespace tictactoe
             }
 
             //diagonals
-            if (gameBoard[1, 1] == symbol 
-                && ((gameBoard[0, 0] == symbol && gameBoard[2, 2] == symbol) 
-                    || (gameBoard[0, 2] == symbol && gameBoard[2, 0] == symbol)))
+            if (GameBoard[1, 1] == symbol
+                && ((GameBoard[0, 0] == symbol && GameBoard[2, 2] == symbol) 
+                    || (GameBoard[0, 2] == symbol && GameBoard[2, 0] == symbol)))
             {
                 isWon = true;
                 return;
@@ -112,11 +64,11 @@ namespace tictactoe
 
             //tie
             isTie = true;
-            for (int i = 0; i < gameBoard.GetLength(0); i++)
+            for (int i = 0; i < GameBoard.GetLength(0); i++)
             {
-                for (int j = 0; j < gameBoard.GetLength(1); j++)
+                for (int j = 0; j < GameBoard.GetLength(1); j++)
                 {
-                    if (gameBoard[i, j] == _EMPTY_SYMBOL)
+                    if (GameBoard[i, j] == EmptySymbol)
                     {
                         isTie = false;
                         return;
@@ -125,45 +77,30 @@ namespace tictactoe
             }
         }
 
-        public void SwitchCurrentPlayer()
+        internal void SwitchPlayers()
         {
             isFirstPlayersTurn = !isFirstPlayersTurn;
         }
 
-        // returns the player whose turn it currently is
-        public PlayerBase GetCurrentPlayer()
+        public Player GetCurrentPlayer()
         {
-            return isFirstPlayersTurn ? player1 : player2;
+            return isFirstPlayersTurn ? Player1 : Player2;
         }
 
-        // conversely, returns the player whose turn it currently isn't
-        public PlayerBase GetOtherPlayer()
+        public Player GetOtherPlayer()
         {
-            return isFirstPlayersTurn ? player2 : player1;
+            return isFirstPlayersTurn ? Player2 : Player1;
         }
 
         public void UpdateBoard((int, int) coordinates)
         {
-            if (!IsLegalMove(coordinates))
+            if (!Utils.IsLegalMove(coordinates, GameBoard))
             {
                 return;
             }
 
-            char symbol = GetCurrentPlayer().symbol;
-            gameBoard[coordinates.Item1 - 1, coordinates.Item2 - 1] = symbol;            
-        }
-
-        public (int, int) PickRandomLegalMove()
-        {
-            var moves = GetAllLegalMoves();
-            int rand = rnd.Next(moves.Count);
-            (int, int) randomLegalMove = moves[rand];
-            return randomLegalMove;
-        }
-
-        public (int, int) GetNextMoveFromComputer()
-        {
-            return PickRandomLegalMove();
+            char symbol = GetCurrentPlayer().Symbol;
+            GameBoard[coordinates.Item1, coordinates.Item2] = symbol;            
         }
 
         public (int, int) GetNextMoveFromHuman()
@@ -173,14 +110,14 @@ namespace tictactoe
             do
             {
                 nextMove = this.ReadHumanMoveFromConsole();
-                isLegal = IsLegalMove(nextMove);
+                isLegal = Utils.IsLegalMove(nextMove, GameBoard);
 
                 if (!isLegal)
                 {
                     Console.WriteLine("Illegal move.");
                 }
             }
-            while (!IsLegalMove(nextMove));
+            while (!Utils.IsLegalMove(nextMove,GameBoard));
 
             return nextMove;
         }
@@ -217,29 +154,31 @@ namespace tictactoe
 
         public void PlayNextTurn()
         {
-            if (!GetCurrentPlayer().IsHuman())
+            Player currentPlayer = GetCurrentPlayer();
+            if (!currentPlayer.IsHuman)
             {
-                Console.WriteLine("Press any key to let " + GetCurrentPlayer().name + " play.");
+                Console.WriteLine("Press any key to let " + currentPlayer.Name + " play.");
                 Console.ReadKey();
             }
-            Console.WriteLine(GetCurrentPlayer().name + "'s turn");
-            (int, int) nextMove = GetCurrentPlayer().IsHuman() ? GetNextMoveFromHuman() : GetNextMoveFromComputer();
+            Console.WriteLine(currentPlayer.Name + "'s turn");
+
+            (int, int) nextMove = currentPlayer.GetNextMove(GameBoard);
             UpdateBoard(nextMove);
         }
 
         public void PrintBoard()
         {
-            Console.WriteLine('╔' + new string('═',gameBoard.GetLength(0)) + '╗');
-            for (int i = 0; i < gameBoard.GetLength(0); i++)
+            Console.WriteLine('╔' + new string('═',GameBoard.GetLength(0)) + '╗');
+            for (int i = 0; i < GameBoard.GetLength(0); i++)
             {
                 Console.Write('║');
-                for (int j = 0; j < gameBoard.GetLength(1); j++)
+                for (int j = 0; j < GameBoard.GetLength(1); j++)
                 {
-                    Console.Write(gameBoard[i, j].ToString());
+                    Console.Write(GameBoard[i, j].ToString());
                 }
                 Console.WriteLine('║');
             }
-            Console.WriteLine('╚' + new string('═', gameBoard.GetLength(0)) + '╝');
+            Console.WriteLine('╚' + new string('═', GameBoard.GetLength(0)) + '╝');
         }
     }
 }

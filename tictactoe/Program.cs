@@ -77,22 +77,22 @@ namespace tictactoe
             //                   5: impossible (always plays a perfect game by the ruleset)
 
             // create players
-            PlayerBase playerOne;
-            PlayerBase playerTwo;
+            Player playerOne;
+            Player playerTwo;
 
             switch (humanPlayerCount)
             {
                 case 0:
-                    playerOne = new PlayerComputer(playerOneSymbol, playerOneName);
-                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName);
+                    playerOne = new PlayerComputer(playerOneSymbol, playerOneName, false);
+                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName, false);
                     break;
                 case 1:
-                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
-                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName);
+                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
+                    playerTwo = new PlayerComputer(playerTwoSymbol, playerTwoName, false);
                     break;
                 case 2:
-                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
-                    playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName);
+                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
+                    playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName, true);
                     break;
                 default:
                     throw new ArgumentException();
@@ -126,11 +126,11 @@ namespace tictactoe
                     game.PlayNextTurn();
                     game.PrintBoard();
                     game.UpdateIsWonOrTie();
-                    game.SwitchCurrentPlayer();
+                    game.SwitchPlayers();
                 }
-                game.SwitchCurrentPlayer(); // when the game is won, switch back to the winner
+                game.SwitchPlayers(); // when the game is won, switch back to the winner
 
-                Console.WriteLine(game.isWon ? game.GetCurrentPlayer().name + " wins!" : "It's a tie!");
+                Console.WriteLine(game.isWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
                 Console.Write("Play again? Y/n ");
 
                 response = Console.ReadLine().ToLower();
