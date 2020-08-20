@@ -6,6 +6,19 @@ namespace tictactoe
 {
     class Program
     {
+        private static Player PickAndCreateAI(char symbol, string name)
+        {
+            Console.WriteLine("What type of AI should " + name + " be?");
+            Console.WriteLine("1) (E)asy - picks random moves (default)");
+            Console.WriteLine("2) (h)ard - never loses");
+            string response = Console.ReadLine().Trim(' ').ToLower();
+            if (response == "2" || response == "h" || response == "hard")
+            {
+                return new PlayerAIMinimax(symbol, name, false);
+            }
+            else return new PlayerAIRandom(symbol, name, false);
+        }
+
         static void Main(string[] args)
         {
             // greet
@@ -15,10 +28,10 @@ namespace tictactoe
             string response;
             int humanPlayerCount = 1;
             Console.WriteLine("Choose an option by typing the highlighted letter:" +
-                "\n1: play against a (c)omputer opponent (default)" +
-                "\n2: play against another (p)layer" +
-                "\n3: (w)atch two computer players" +
-                "\n4: (q)uit");
+                "\n1) Play against a (c)omputer opponent (default)" +
+                "\n2) Play against another (p)layer" +
+                "\n3) (w)atch two computer players" +
+                "\n4) (q)uit");
             response = Console.ReadLine().Trim(' ').ToLower();
             if (response == "2" || response == "p" || response == "player")
             {
@@ -91,15 +104,16 @@ namespace tictactoe
             Player playerOne;
             Player playerTwo;
 
+            // TODO: we need to let the player pick the AI(s) now that we have more than one
             switch (humanPlayerCount)
             {
                 case 0:
-                    playerOne = new PlayerAIRandom(playerOneSymbol, playerOneName, false);
-                    playerTwo = new PlayerAIRandom(playerTwoSymbol, playerTwoName, false);
+                    playerOne = PickAndCreateAI(playerOneSymbol, playerOneName); //;new PlayerAIRandom(playerOneSymbol, playerOneName, false);
+                    playerTwo = PickAndCreateAI(playerTwoSymbol, playerTwoName);
                     break;
                 case 1:
                     playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
-                    playerTwo = new PlayerAIRandom(playerTwoSymbol, playerTwoName, false);
+                    playerTwo = PickAndCreateAI(playerTwoSymbol, playerTwoName);
                     break;
                 case 2:
                     playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
