@@ -81,11 +81,11 @@ namespace tictactoe
                 }
             }
 
-            // difficulty ideas: 1: easiest (picks wrong every time?)
+            // difficulty ideas: 1: easiest (maybe reverse minimax, lets you win quickly?)
             //                   2: easy (picks random legal move) (easiest to implement)
             //                   3: moderate (picks from ruleset, often forgets rules)
             //                   4: hard (picks from ruleset, sometimes forgets rules)
-            //                   5: impossible (always plays a perfect game by the ruleset)
+            //                   5: impossible (always plays a perfect game using minimax)
 
             // create players
             Player playerOne;
@@ -134,15 +134,18 @@ namespace tictactoe
 
                 while (!game.IsFinal)
                 {
+                    if (!game.GetCurrentPlayer().IsHuman)
+                    {
+                        Console.WriteLine("Press any key to let " + game.GetCurrentPlayer().Name + " play.");
+                        Console.ReadKey();
+                    }
+                    Console.WriteLine(game.GetCurrentPlayer().Name + "'s turn");
                     game.PlayNextTurn();
                     game.PrintBoard();
-                    //game.UpdateIsWonAndIsFinal();
-                    game.SwitchPlayers();
                 }
-                game.SwitchPlayers(); // when the game is won, switch back to the winner
 
                 Console.WriteLine(game.IsWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
-                Console.Write("Play again? (Y)es / (n)o / (c)hange mode");
+                Console.WriteLine("Play again? (Y)es / (n)o / (c)hange mode");
 
                 response = Console.ReadLine().ToLower();
                 if (response == "n" || response == "no")
@@ -153,7 +156,6 @@ namespace tictactoe
                 {
                     goto Menu;
                     // TODO: this is really ugly but it's just a quick hack to play again
-                    // 
                 }
             }
             Console.WriteLine("Thank you for playing! Come again!");

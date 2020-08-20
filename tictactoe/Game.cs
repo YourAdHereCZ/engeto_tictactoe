@@ -13,11 +13,13 @@ namespace tictactoe
             { EmptySymbol, EmptySymbol, EmptySymbol }
         };
 
-        public bool isFirstPlayersTurn { get; private set; } = true;
+        public bool IsFirstPlayersTurn { get; private set; } = true;
 
-        public bool IsWon { get { return Utils.IsWon(GameBoard, Player1.Symbol) || Utils.IsWon(GameBoard, Player2.Symbol); } }
+        
         public bool IsFinal { get { return Utils.IsFull(GameBoard) || IsWon; } }
-
+        public bool IsWon { get { return Utils.IsWon(GameBoard, Player1.Symbol) || Utils.IsWon(GameBoard, Player2.Symbol); } }
+        public bool IsTie { get { return IsFinal && !IsWon; } }
+        
         public Player Player1 { get; private set; }
         public Player Player2 { get; private set; }
 
@@ -25,25 +27,20 @@ namespace tictactoe
         {   
             Player1 = player1;
             Player2 = player2;
-            this.isFirstPlayersTurn = isFirstPlayersTurn;
-        }
-
-        internal void SwitchPlayers()
-        {
-            isFirstPlayersTurn = !isFirstPlayersTurn;
+            IsFirstPlayersTurn = isFirstPlayersTurn;
         }
 
         public Player GetCurrentPlayer()
         {
-            return isFirstPlayersTurn ? Player1 : Player2;
+            return IsFirstPlayersTurn ? Player1 : Player2;
         }
 
         public Player GetOtherPlayer()
         {
-            return isFirstPlayersTurn ? Player2 : Player1;
+            return IsFirstPlayersTurn ? Player2 : Player1;
         }
 
-        public void PlayMove((int, int) move)
+        private void PlayMove((int, int) move)
         {
             if (!Utils.IsLegalMove(move, GameBoard))
             {
@@ -54,25 +51,18 @@ namespace tictactoe
             GameBoard[move.Item1, move.Item2] = symbol;            
         }
 
-        public void UndoMove((int, int) move)
-        {
-            GameBoard[move.Item1, move.Item2] = EmptySymbol;
-        }
-
-
         public void PlayNextTurn()
         {
             Player currentPlayer = GetCurrentPlayer();
-            Player otherPlayer = GetOtherPlayer();
-            if (!currentPlayer.IsHuman)
-            {
-                Console.WriteLine("Press any key to let " + currentPlayer.Name + " play.");
-                Console.ReadKey();
-            }
-            Console.WriteLine(currentPlayer.Name + "'s turn");
+            Player otherPlayer = GetOtherPlayer();            
 
             (int, int) nextMove = currentPlayer.GetNextMove(GameBoard, currentPlayer.Symbol, otherPlayer.Symbol);
             PlayMove(nextMove);
+
+            if (!IsFinal)
+            {
+                IsFirstPlayersTurn = !IsFirstPlayersTurn;
+            }
         }
 
         public void PrintBoard()

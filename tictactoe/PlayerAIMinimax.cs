@@ -25,7 +25,6 @@ namespace tictactoe
                 return 0;
             }
 
-
             List<(int, int)> allMoves = Utils.GetAllLegalMoves(board);
             List<int> scores = new List<int>();
 
@@ -39,7 +38,6 @@ namespace tictactoe
             return isMaximizing ? scores.Max() : scores.Min();
 
         }
-
 
         private void PlayMove((int, int) move, char player, ref char[,] board)
         {
@@ -55,21 +53,11 @@ namespace tictactoe
             board[move.Item1, move.Item2] = Game.EmptySymbol;
         }
 
-
-
-
-
         public override (int, int) GetNextMove(char[,] board, char player, char opponent)
         {
             int bestScore = int.MinValue;
             (int, int) bestMove = (-1, -1);
 
-
-
-            // prepare a list of all possible moves
-            //List<(int, int)> allMoves = Utils.GetAllLegalMoves(board);
-
-            
             foreach ((int, int) move in Utils.GetAllLegalMoves(board))
             {
                 PlayMove(move, player, ref board);
