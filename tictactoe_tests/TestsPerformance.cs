@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Runtime.CompilerServices;
 using tictactoe;
 
 namespace tictactoe_tests
