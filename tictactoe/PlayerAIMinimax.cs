@@ -6,14 +6,29 @@ namespace tictactoe
 {
     public class PlayerAIMinimax : Player
     {
+        private static Random random = new Random();
+
         public PlayerAIMinimax(char symbol, string name, bool isHuman) : base(symbol, name, isHuman)
         {
         }
 
-        // TODO: if two moves have the same score, pick randomly between them - we want 
-        //  some variance from the AI, such as starting in a different corner each time etc.
-        private int Minimax(char[,] board, char player, char opponent, bool isMaximizing)
+        private void PlayMove((int, int) move, char player, char[,] board)
         {
+            if (!Utils.IsLegalMove(move, board))
+            {
+                throw new ArgumentException();
+            }
+            board[move.Item1, move.Item2] = player;
+        }
+
+        public void UndoMove((int, int) move, char[,] board)
+        {
+            board[move.Item1, move.Item2] = Game.EmptySymbol;
+        }
+
+        private int Minimax(char[,] board, char player, char opponent, bool isMaximizing, out (int, int) bestMove)
+        {
+            bestMove = (-1, -1);
             if (Utils.IsWon(board, player))
             {
                 return 1;
@@ -29,48 +44,35 @@ namespace tictactoe
 
             List<(int, int)> allMoves = Utils.GetAllLegalMoves(board);
             List<int> scores = new List<int>();
+            int score;
 
             foreach ((int, int) move in allMoves)
             {
-                PlayMove(move, (isMaximizing ? player : opponent), ref board);
-                scores.Add(Minimax(board, player, opponent, !isMaximizing));
-                UndoMove(move, ref board);
+                PlayMove(move, (isMaximizing ? player : opponent), board);
+                score = Minimax(board, player, opponent, !isMaximizing, out (int, int) newBestMove);
+                scores.Add(score);
+                UndoMove(move, board);
             }
 
-            return isMaximizing ? scores.Max() : scores.Min();
-        }
+            List<int> indices = new List<int>();
 
-        private void PlayMove((int, int) move, char player, ref char[,] board)
-        {
-            if (!Utils.IsLegalMove(move, board))
+            int max = scores.Max();
+            int min = scores.Min();
+            for (int i = 0; i < scores.Count; i++)
             {
-                throw new ArgumentException();
+                if (scores[i] == (isMaximizing ? max : min))
+                {
+                    indices.Add(i);
+                }
             }
-            board[move.Item1, move.Item2] = player;
-        }
-
-        public void UndoMove((int, int) move, ref char[,] board)
-        {
-            board[move.Item1, move.Item2] = Game.EmptySymbol;
+            var randomBestIndex = indices[random.Next(indices.Count)];
+            bestMove = allMoves[randomBestIndex];
+            return scores[randomBestIndex];
         }
 
         public override (int, int) GetNextMove(char[,] board, char player, char opponent)
         {
-            int bestScore = int.MinValue;
-            (int, int) bestMove = (-1, -1);
-
-            foreach ((int, int) move in Utils.GetAllLegalMoves(board))
-            {
-                PlayMove(move, player, ref board);
-                int score = Minimax(board, player, opponent, false);
-                UndoMove(move, ref board);
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestMove = move;
-                }
-            }
-
+            int _ = Minimax(board, player, opponent, true, out (int, int) bestMove);
             return bestMove;
         }
     }
