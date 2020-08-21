@@ -1,71 +1,61 @@
 ﻿using System;
-using System.ComponentModel.Design;
-using System.Threading;
 
 namespace tictactoe
 {
     class Program
     {
-        private static Player PickAndCreateAI(char symbol, string name)
+        private static Player UserPicksAI(char symbol, string name)
         {
             Console.WriteLine("What type of AI should " + name + " be?");
-            Console.WriteLine("1) (E)asy - picks random moves (default)");
-            Console.WriteLine("2) (h)ard - never loses");
+            Console.WriteLine("1) (E)asy - picks random moves [default]");
+            Console.WriteLine("2) (H)ard - never loses");
             string response = Console.ReadLine().Trim(' ').ToLower();
             if (response == "2" || response == "h" || response == "hard")
             {
                 return new PlayerAIMinimax(symbol, name, false);
             }
-            else return new PlayerAIRandom(symbol, name, false);
+            return new PlayerAIRandom(symbol, name, false);
         }
 
-        static void Main(string[] args)
+        private static int UserPicksGameMode()
         {
-            // greet
-            Console.WriteLine("Welcome to TicTacToe!");
-        Menu:
-            // prompt: game mode
-            string response;
-            int humanPlayerCount = 1;
-            Console.WriteLine("Choose an option by typing the highlighted letter:" +
-                "\n1) Play against a (c)omputer opponent (default)" +
-                "\n2) Play against another (p)layer" +
-                "\n3) (w)atch two computer players" +
-                "\n4) (q)uit");
-            response = Console.ReadLine().Trim(' ').ToLower();
-            if (response == "2" || response == "p" || response == "player")
+            Console.WriteLine("Choose an option by typing a number or a letter:" +
+                "\n1) (C)lassic - play against a computer opponent [default]" +
+                "\n2) (H)otseat - play against a friend" +
+                "\n3) (O)bserve - watch two computer players" +
+                "\n4) (Q)uit");
+            string response = Console.ReadLine().Trim(' ').ToLower();
+            if (response == "2" || response == "h" || response == "hotseat")
             {
-                humanPlayerCount = 2;
+                return 2;
             }
-            else if (response == "3" || response == "w" || response == "watch")
+            else if (response == "3" || response == "o" || response == "observe")
             {
-                humanPlayerCount = 0;
+                return 3;
             }
             else if (response == "4" || response == "q" || response == "quit")
             {
-                Console.WriteLine("Come again!");
-                return;
+                //Console.WriteLine("Come again!");
+                return 4; 
             }
-
-            // prompt: choose names?
-            string playerOneName = "Player 1";
-            string playerTwoName = "Player 2";
+            return 1;
+        }
+        private static void UserPicksPlayerNames(ref string playerOneName, ref string playerTwoName)
+        {
             Console.Write("Would you like to select players' names? y/N ");
-            response = Console.ReadLine().Trim(' ').ToLower();
+            string response = Console.ReadLine().Trim(' ').ToLower();
             if (response == "y" || response == "yes")
             {
-                
                 Console.Write("Type the name for player 1: ");
                 playerOneName = Console.ReadLine();
                 Console.Write("Type the name for player 2: ");
                 playerTwoName = Console.ReadLine();
             }
-
-            // prompt: choose symbols?
-            char playerOneSymbol = 'X';
-            char playerTwoSymbol = 'O';
+        }
+        private static void UserPicksPlayerSymbols(string playerOneName, string playerTwoName, ref char playerOneSymbol, ref char playerTwoSymbol)
+        {
             Console.Write("Would you like to select players' symbols? y/N ");
-            response = Console.ReadLine().ToLower();
+            string response = Console.ReadLine().ToLower();
             if (response == "y" || response == "yes")
             {
                 // TODO: refactor
@@ -93,86 +83,99 @@ namespace tictactoe
                     Console.WriteLine("More than one character specified. The first character (\'" + playerTwoSymbol + "\') will be used.");
                 }
             }
+        }
 
-            // difficulty ideas: 1: easiest (maybe reverse minimax, lets you win quickly?)
-            //                   2: easy (picks random legal move) (easiest to implement)
-            //                   3: moderate (picks from ruleset, often forgets rules)
-            //                   4: hard (picks from ruleset, sometimes forgets rules)
-            //                   5: impossible (always plays a perfect game using minimax)
-
-            // create players
-            Player playerOne;
-            Player playerTwo;
-
-            // TODO: we need to let the player pick the AI(s) now that we have more than one
-            switch (humanPlayerCount)
-            {
-                case 0:
-                    playerOne = PickAndCreateAI(playerOneSymbol, playerOneName); //;new PlayerAIRandom(playerOneSymbol, playerOneName, false);
-                    playerTwo = PickAndCreateAI(playerTwoSymbol, playerTwoName);
-                    break;
-                case 1:
-                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
-                    playerTwo = PickAndCreateAI(playerTwoSymbol, playerTwoName);
-                    break;
-                case 2:
-                    playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
-                    playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName, true);
-                    break;
-                default:
-                    throw new ArgumentException();
-            }             
-
-            // prompt: who starts?
-            // default: player1
+        private static bool UserPicksWhoStarts(string playerOneName)
+        {
             Console.Write("Would you like to switch the players' order? (By default, " + playerOneName + " will start in the first round.) y/N ");
-            response = Console.ReadLine().ToLower();
-            bool firstPlayerStarts = true;
+            string response = Console.ReadLine().ToLower();
             if (response == "y" || response == "yes")
             {
-                firstPlayerStarts = false;
+                return false;
             }
-
-            // TODO: prompt: who starts next round?
-            // default: no change
-            // choices: no change / flip / winner starts / loser starts / random
-            
-            Game game;
-            bool playAgain = true;
-
-            // game loop
-            while (playAgain)
-            {
-                game = new Game(playerOne, playerTwo, firstPlayerStarts);
-                game.PrintBoard();
-
-                while (!game.IsFinal)
-                {
-                    if (!game.GetCurrentPlayer().IsHuman)
-                    {
-                        Console.WriteLine("Press any key to let " + game.GetCurrentPlayer().Name + " play.");
-                        Console.ReadKey();
-                    }
-                    Console.WriteLine(game.GetCurrentPlayer().Name + "'s turn");
-                    game.PlayNextTurn();
-                    game.PrintBoard();
-                }
-
-                Console.WriteLine(game.IsWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
-                Console.WriteLine("Play again? (Y)es / (n)o / (c)hange mode");
-
-                response = Console.ReadLine().ToLower();
-                if (response == "n" || response == "no")
-                {
-                    playAgain = false;
-                }
-                else if(response == "c" || response == "change")
-                {
-                    goto Menu;
-                    // TODO: this is really ugly but it's just a quick hack to play again
-                }
-            }
-            Console.WriteLine("Thank you for playing! Come again!");
+            return true;
         }
+
+        static void Main(string[] args)
+        {
+            bool continueGame = true;           
+
+            Console.WriteLine("Welcome to TicTacToe!");
+            
+            while (continueGame)
+            {
+                string playerOneName = "Player 1";
+                string playerTwoName = "Player 2";
+
+                char playerOneSymbol = 'X';
+                char playerTwoSymbol = 'O';
+
+                bool firstPlayerStarts;
+
+                Player playerOne;
+                Player playerTwo;
+
+                int gameMode = UserPicksGameMode();
+                if (gameMode == 4) break;
+                UserPicksPlayerNames(ref playerOneName, ref playerTwoName);
+                UserPicksPlayerSymbols(playerOneName, playerTwoName, ref playerOneSymbol, ref playerTwoSymbol);
+                firstPlayerStarts = UserPicksWhoStarts(playerOneName);
+                // TODO: who starts next round?
+
+                switch (gameMode)
+                {
+                    case 1:
+                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
+                        playerTwo = UserPicksAI(playerTwoSymbol, playerTwoName);
+                        break;
+                    case 2:
+                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
+                        playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName, true);
+                        break;
+                    case 3:
+                        playerOne = UserPicksAI(playerOneSymbol, playerOneName);
+                        playerTwo = UserPicksAI(playerTwoSymbol, playerTwoName);
+                        break;
+                    default:
+                        throw new ArgumentException();
+                }
+
+                Game game;
+                bool playAgain = true;
+
+                while (playAgain)
+                {
+                    game = new Game(playerOne, playerTwo, firstPlayerStarts);
+                    game.PrintBoard();
+
+                    while (!game.IsFinal)
+                    {
+                        if (!game.GetCurrentPlayer().IsHuman)
+                        {
+                            Console.WriteLine("Press any key to let " + game.GetCurrentPlayer().Name + " play.");
+                            Console.ReadKey();
+                        }
+                        Console.WriteLine(game.GetCurrentPlayer().Name + "'s turn");
+                        game.PlayNextTurn();
+                        game.PrintBoard();
+                    }
+
+                    Console.WriteLine(game.IsWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
+                    Console.WriteLine("Play again? (Y)es / (n)o / (c)hange mode");
+
+                    string response = Console.ReadLine().ToLower();
+                    if (response == "n" || response == "no")
+                    {
+                        playAgain = false;
+                        continueGame = false;
+                    }
+                    else if (response == "c" || response == "change")
+                    {
+                        playAgain = false;
+                    }
+                }
+            }            
+            Console.WriteLine("Thank you for playing! Come again!");
+        }        
     }
 }
