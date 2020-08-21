@@ -15,11 +15,10 @@ namespace tictactoe
 
         public bool IsFirstPlayersTurn { get; private set; } = true;
 
-        
         public bool IsFinal { get { return Utils.IsFull(GameBoard) || IsWon; } }
         public bool IsWon { get { return Utils.IsWon(GameBoard, Player1.Symbol) || Utils.IsWon(GameBoard, Player2.Symbol); } }
         public bool IsTie { get { return IsFinal && !IsWon; } }
-        
+
         public Player Player1 { get; private set; }
         public Player Player2 { get; private set; }
 
@@ -40,11 +39,21 @@ namespace tictactoe
             return IsFirstPlayersTurn ? Player2 : Player1;
         }
 
+        public void PlayMove((int, int) move, char[,] board)
+        {
+            if (!Utils.IsLegalMove(move, board))
+            {
+                throw new ArgumentException();
+            }
+            char symbol = GetCurrentPlayer().Symbol;
+            board[move.Item1, move.Item2] = symbol;
+        }
+
         private void PlayMove((int, int) move)
         {
             if (!Utils.IsLegalMove(move, GameBoard))
             {
-                return;
+                throw new ArgumentException();
             }
 
             char symbol = GetCurrentPlayer().Symbol;
