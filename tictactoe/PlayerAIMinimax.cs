@@ -10,6 +10,8 @@ namespace tictactoe
         {
         }
 
+        // TODO: if two moves have the same score, pick randomly between them - we want 
+        //  some variance from the AI, such as starting in a different corner each time etc.
         private int Minimax(char[,] board, char player, char opponent, bool isMaximizing)
         {
             if (Utils.IsWon(board, player))
@@ -36,7 +38,6 @@ namespace tictactoe
             }
 
             return isMaximizing ? scores.Max() : scores.Min();
-
         }
 
         private void PlayMove((int, int) move, char player, ref char[,] board)
@@ -63,7 +64,7 @@ namespace tictactoe
                 PlayMove(move, player, ref board);
                 int score = Minimax(board, player, opponent, false);
                 UndoMove(move, ref board);
-                if (score > bestScore )
+                if (score > bestScore)
                 {
                     bestScore = score;
                     bestMove = move;
