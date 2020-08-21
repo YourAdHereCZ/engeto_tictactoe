@@ -6,19 +6,6 @@ namespace tictactoe
 {
     public class Utils
     {
-        internal static char[] FlattenBoard(char[,] gameBoard)
-        {
-            char[] result = new char[9];
-            for (int i = 0; i < gameBoard.GetLength(0); i++)
-            {
-                for (int j = 0; j < gameBoard.GetLength(1); j++)
-                {
-                    result[i * gameBoard.GetLength(0) + j] = gameBoard[i, j];
-                }
-            }
-            return result;
-        }
-
         internal static bool IsLegalMove((int, int) move, char[,] gameBoard)
         {
             int row = move.Item1;
@@ -54,18 +41,35 @@ namespace tictactoe
             return true;
         }
 
-        internal static bool IsWon(char[,] gameBoard, char player)
+        private static uint BoardToBitmask(char[,] gameBoard, char player)
         {
-            char[] flat = FlattenBoard(gameBoard);
+            uint mask = 0;
+            int index = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (gameBoard[i, j] == player)
+                    {
+                        mask += 1u << index;
+                    }
+                    index++;
+                }
+            }
+            return mask;
+        }
 
-            if ((flat[0] == player && flat[1] == player && flat[2] == player) 
-                || (flat[3] == player && flat[4] == player && flat[5] == player)
-                || (flat[6] == player && flat[7] == player && flat[8] == player)
-                || (flat[0] == player && flat[3] == player && flat[6] == player)
-                || (flat[1] == player && flat[4] == player && flat[7] == player)
-                || (flat[2] == player && flat[5] == player && flat[8] == player)
-                || (flat[0] == player && flat[4] == player && flat[8] == player)
-                || (flat[2] == player && flat[4] == player && flat[6] == player))
+        public static bool IsWon(char[,] gameBoard, char player)
+        {
+            uint mask = BoardToBitmask(gameBoard, player);
+            if (((mask & 0b000000111) == 0b000000111)  // row1
+             || ((mask & 0b000111000) == 0b000111000)  // row2
+             || ((mask & 0b111000000) == 0b111000000)  // row3
+             || ((mask & 0b001001001) == 0b001001001)  // col1
+             || ((mask & 0b010010010) == 0b010010010)  // col2
+             || ((mask & 0b100100100) == 0b100100100)  // col3
+             || ((mask & 0b100010001) == 0b100010001)  // dia1
+             || ((mask & 0b001010100) == 0b001010100)) // dia2
             {
                 return true;
             }
