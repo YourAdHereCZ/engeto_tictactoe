@@ -6,7 +6,7 @@ namespace tictactoe
     {
         static readonly Random rnd = new Random();
 
-        public PlayerAIRandom(char symbol, string name, bool isHuman) : base(symbol, name, isHuman)
+        public PlayerAIRandom(char symbol, string name) : base(symbol, name, false)
         {
         }
 
@@ -15,7 +15,7 @@ namespace tictactoe
             return PickRandomLegalMove(gameBoard);
         }
 
-        public (int, int) PickRandomLegalMove(char[,] gameBoard)
+        private (int, int) PickRandomLegalMove(char[,] gameBoard)
         {
             var moves = Utils.GetAllLegalMoves(gameBoard);
             int rand = rnd.Next(moves.Count);

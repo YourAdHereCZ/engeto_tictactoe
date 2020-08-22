@@ -6,15 +6,26 @@ namespace tictactoe
     {
         private static Player UserPicksAI(char symbol, string name)
         {
-            Console.WriteLine("What type of AI should " + name + " be?");
-            Console.WriteLine("1) (E)asy - picks random moves [default]");
-            Console.WriteLine("2) (H)ard - never loses");
+            Console.WriteLine("What type of AI should " + name + " be?"
+                + "\n1) (E)asy - picks random moves [default]"
+                + "\n2) (M)oderate"
+                + "\n3) (H)ard"
+                + "\n4) (E)xtreme");
+
             string response = Console.ReadLine().Trim(' ').ToLower();
-            if (response == "2" || response == "h" || response == "hard")
+            if (response == "2" || response == "m" || response == "moderate")
             {
-                return new PlayerAIMinimax(symbol, name, false);
+                return new PlayerAIMinimax(symbol, name, 4);
             }
-            return new PlayerAIRandom(symbol, name, false);
+            else if(response == "3" || response == "h" || response == "hard")
+            {
+                return new PlayerAIMinimax(symbol, name, 5);
+            }
+            else if (response == "4" || response == "e" || response == "extreme")
+            {
+                return new PlayerAIMinimax(symbol, name, 6);
+            }
+            return new PlayerAIRandom(symbol, name);
         }
 
         private static int UserPicksGameMode()
@@ -125,12 +136,12 @@ namespace tictactoe
                 switch (gameMode)
                 {
                     case 1:
-                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
+                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
                         playerTwo = UserPicksAI(playerTwoSymbol, playerTwoName);
                         break;
                     case 2:
-                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName, true);
-                        playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName, true);
+                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
+                        playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName);
                         break;
                     case 3:
                         playerOne = UserPicksAI(playerOneSymbol, playerOneName);

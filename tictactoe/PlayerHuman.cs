@@ -4,7 +4,7 @@ namespace tictactoe
 {
     public class PlayerHuman : Player
     {
-        public PlayerHuman(char symbol, string name, bool isHuman) : base(symbol, name, isHuman)
+        public PlayerHuman(char symbol, string name) : base(symbol, name, true)
         {
         }
 
