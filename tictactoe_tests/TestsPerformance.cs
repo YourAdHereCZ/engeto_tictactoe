@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System.Runtime.CompilerServices;
 using tictactoe;
 
 namespace tictactoe_tests
@@ -11,8 +10,8 @@ namespace tictactoe_tests
         public void IsWon_MillionCalls_PerformanceTest()
         {
             // Arrange
-            Player random1 = new PlayerAIRandom('X', "Random 1", false);
-            Player random2 = new PlayerAIRandom('O', "Random 2", false);
+            Player random1 = new PlayerAIRandom('X', "Random 1");
+            Player random2 = new PlayerAIRandom('O', "Random 2");
             Game game = new Game(random1, random2, true);
             game.PlayNextTurn();
             game.PlayNextTurn();

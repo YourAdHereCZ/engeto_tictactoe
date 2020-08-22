@@ -6,7 +6,7 @@ namespace tictactoe_tests
     [TestFixture]
     class TestsMinimax
     {
-        private const int iterations = 30;
+        private const int iterations = 300;
 
         // quietly play a whole game between two AIs,
         // return 0 if the game was a draw, 1 if player 1 won and -1 if player 2 won
@@ -32,12 +32,12 @@ namespace tictactoe_tests
 
         #region Minimax tests
         [Test]
-        // If we let a minimaxing AI play against an AI that picks randomly, the minimaxer should never lose.
-        public void PlayerAIMinimax_vsPlayerAIRandom_NeverLoses()
+        // If we let a perfect minimaxing AI play against an AI that picks randomly, the minimaxer should never lose.
+        public void PlayerAIMinimax9_vsPlayerAIRandom_NeverLoses()
         {
             // Arrange
-            Player minimax = new PlayerAIMinimax('X', "Minimax", false);
-            Player random = new PlayerAIRandom('O', "Random", false);
+            Player minimax = new PlayerAIMinimax('X', "Minimax", 9);
+            Player random = new PlayerAIRandom('O', "Random");
 
             // Act & Assert
             for (int i = 0; i < iterations; i++)
@@ -52,12 +52,12 @@ namespace tictactoe_tests
         }
 
         [Test]
-        // If we let two minimaxing AIs play against each other, they should always tie.
-        public void PlayerAIMinimax_vsPlayerAIMinimax_AlwaysATie()
+        // If we let two perfect minimaxing AIs play against each other, they should always tie.
+        public void PlayerAIMinimax9_vsPlayerAIMinimax9_AlwaysATie()
         {
             // Arrange
-            Player minimax1 = new PlayerAIMinimax('X', "Minimax1", false);
-            Player minimax2 = new PlayerAIMinimax('O', "Minimax2", false);
+            Player minimax1 = new PlayerAIMinimax('X', "Minimax1", 9);
+            Player minimax2 = new PlayerAIMinimax('O', "Minimax2", 9);
 
             // Act & Assert
             for (int i = 0; i < iterations; i++)
