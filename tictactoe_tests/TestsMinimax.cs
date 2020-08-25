@@ -23,7 +23,7 @@ namespace tictactoe_tests
             {
                 return 0;
             }
-            if (quietGame.GetOtherPlayer() == player1)
+            if (quietGame.OtherPlayer == player1)
             {
                 return 1;
             }

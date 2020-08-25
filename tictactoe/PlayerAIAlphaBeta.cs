@@ -61,13 +61,11 @@ namespace tictactoe
                 int highestScore = int.MinValue;
                 foreach ((int, int) move in allMoves)
                 {
-                    state.Board[move.Item1, move.Item2] = state.IsFirstPlayersTurn;
-                    state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
+                    state.PlayMove(move);
 
                     score = Minimax(state, player, depth - 1, !isMaximizing, alpha, beta, out _);
 
-                    state.Board[move.Item1, move.Item2] = null;
-                    state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
+                    state.UndoMove(move);
 
                     highestScore = Math.Max(highestScore, score);
                     alpha = Math.Max(alpha, highestScore);
@@ -87,13 +85,12 @@ namespace tictactoe
                 int lowestScore = int.MaxValue;
                 foreach ((int, int) move in allMoves)
                 {
-                    state.Board[move.Item1, move.Item2] = state.IsFirstPlayersTurn;
-                    state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
+                    state.PlayMove(move);
+                    
 
                     score = Minimax(state, player, depth - 1, !isMaximizing, out _);
 
-                    state.Board[move.Item1, move.Item2] = null;
-                    state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
+                    state.UndoMove(move);
 
                     lowestScore = Math.Min(lowestScore, score);
                     alpha = Math.Min(alpha, lowestScore);

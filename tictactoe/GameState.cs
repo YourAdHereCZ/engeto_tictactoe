@@ -6,12 +6,14 @@ namespace tictactoe
     public class GameState
     {
         /// <summary>
-        /// Represents the board as a 2D array of nullable booleans.
+        /// Represents the board as a 3x3 2D array of nullable booleans.
+        /// </summary>
+        /// <remarks>
         /// null  = empty
         /// true  = player 1, 
-        /// false = player 2, 
-        /// </summary>
-        public bool?[,] Board { get; internal set; }
+        /// false = player 2
+        /// </remarks>
+        public bool?[,] Board { get; private set; }
 
         /// <summary>
         /// Returns true if the board is won by player one, false otherwise.
@@ -25,21 +27,25 @@ namespace tictactoe
 
         /// <summary>
         /// Represents the player whose turn it is.
+        /// </summary>
+        /// <remarks>
         /// true = player 1, 
         /// false = player 2
-        /// </summary>
-        public bool IsFirstPlayersTurn { get; internal set; }
-        // might as well be called CurrentPlayer?
+        /// it could be argued that this might as well be called CurrentPlayer,
+        /// but that would get confused with Game.CurrentPlayer, also this description is
+        /// more indicative of the fact that it is a boolean value
+        /// </remarks>
+        public bool IsFirstPlayersTurn { get; private set; }
 
         /// <summary>
         /// Returns true if the board is drawn, or won by either player, false otherwise.
         /// </summary>
-        public bool IsFinal { get { return GetIsFull(Board) || IsWon; } }
+        public bool IsFinal { get { return GetIsFull() || IsWon; } }
 
         /// <summary>
         /// Returns true wif the board is drawn, false otherwise.
         /// </summary>
-        public bool IsDraw { get { return GetIsFull(Board) && !IsWon; } }
+        public bool IsDraw { get { return GetIsFull() && !IsWon; } }
 
         /// <summary>
         /// Returns true when the board is won by either player, false otherwise.
@@ -99,28 +105,51 @@ namespace tictactoe
         public List<(int, int)> GetAllLegalMoves()
         {
             List<(int, int)> legalMoves = new List<(int, int)>();
-            (int, int) move;
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    move = (i, j);
-                    if (!Board[i,j].HasValue)
+                    if (!Board[i, j].HasValue)
                     {
-                        legalMoves.Add(move);
+                        legalMoves.Add((i, j));
                     }
                 }
             }
             return legalMoves;
         }
 
-        private static bool GetIsFull(bool?[,] gameBoard)
+        internal void SwitchPlayers()
         {
-            for (int i = 0; i < gameBoard.GetLength(0); i++)
+            IsFirstPlayersTurn = !IsFirstPlayersTurn;
+        }
+
+        internal void PlayMove((int, int) move)
+        {
+            if (!IsLegalMove(move))
             {
-                for (int j = 0; j < gameBoard.GetLength(1); j++)
+                throw new ArgumentException();
+            }
+            Board[move.Item1, move.Item2] = IsFirstPlayersTurn;
+            SwitchPlayers();
+        }
+
+        internal void UndoMove((int, int) move)
+        {
+            if (IsLegalMove(move))
+            {
+                throw new ArgumentException();
+            }
+            Board[move.Item1, move.Item2] = null;
+            SwitchPlayers();
+        }
+
+        private bool GetIsFull()
+        {
+            for (int i = 0; i < Board.GetLength(0); i++)
+            {
+                for (int j = 0; j < Board.GetLength(1); j++)
                 {
-                    if (!gameBoard[i, j].HasValue)
+                    if (!Board[i, j].HasValue)
                     {
                         return false;
                     }

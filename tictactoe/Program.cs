@@ -160,17 +160,17 @@ namespace tictactoe
 
                     while (!game.State.IsFinal)
                     {
-                        if (!game.GetCurrentPlayer().IsHuman)
+                        if (!game.CurrentPlayer.IsHuman)
                         {
-                            Console.WriteLine("Press any key to let " + game.GetCurrentPlayer().Name + " play.");
+                            Console.WriteLine("Press any key to let " + game.CurrentPlayer.Name + " play.");
                             Console.ReadKey();
                         }
-                        Console.WriteLine(game.GetCurrentPlayer().Name + "'s turn");
+                        Console.WriteLine(game.CurrentPlayer.Name + "'s turn");
                         game.PlayNextTurn();
                         game.PrintBoard();
                     }
 
-                    Console.WriteLine(game.State.IsWon ? game.GetOtherPlayer().Name + " wins!" : "It's a tie!");
+                    Console.WriteLine(game.State.IsWon ? game.OtherPlayer.Name + " wins!" : "It's a tie!");
                     Console.WriteLine("Play again? (Y)es / (n)o / (c)hange mode");
 
                     string response = Console.ReadLine().ToLower();

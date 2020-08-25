@@ -19,11 +19,11 @@ namespace tictactoe
         /// 
         /// </summary>
         /// <param name="state">The state to evaluate.</param>
-        /// <param name="player">Stores the maximizing player.</param>
+        /// <param name="player">The maximizing player.</param>
         /// <param name="depth">The maximum depth to search to.</param>
-        /// <param name="isMaximizing">Stores whether it is the maximizing player's turn.</param>
+        /// <param name="isMaximizing">Whether it is the maximizing player's turn.</param>
         /// <param name="bestMove">The best move to be returned from the initial call.</param>
-        /// <param name="isInitialCall">Stores whether the call is root or recursive.</param>
+        /// <param name="isInitialCall">Whether the call is root or recursive.</param>
         /// <returns>The game value of the state - 1 if won, 0 if drawn, -1 if lost.</returns>
         /// <remarks>
         /// Depth is the maximum depth the minimax searches to and can essentially be thought of as the difficulty of the AI
@@ -47,19 +47,14 @@ namespace tictactoe
                 return 0;
             }
 
-            // for each legal move: create a new state from the current state and this move, 
-            //      run recursively on the resulting state and add result to list of scores
+            // for each legal move: play the move, run recursively on the resulting state, revert move
             List<(int, int)> allMoves = state.GetAllLegalMoves();
             List<int> scores = new List<int>();
             foreach ((int, int) move in allMoves)
             {
-                state.Board[move.Item1, move.Item2] = state.IsFirstPlayersTurn;
-                state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
-
+                state.PlayMove(move);
                 scores.Add(Minimax(state, player, depth - 1, !isMaximizing, out _));
-
-                state.Board[move.Item1, move.Item2] = null;
-                state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
+                state.UndoMove(move);
             }
 
             // now make a list of indices of scores that are best/worst
@@ -81,7 +76,7 @@ namespace tictactoe
                     {
                         indices.Add(i);
                     }
-                }                
+                }
                 var randomBestIndex = indices[random.Next(indices.Count)];
                 bestMove = allMoves[randomBestIndex];
             }
@@ -90,7 +85,8 @@ namespace tictactoe
 
         public override (int, int) GetNextMove(GameState state)
         {
-            // TODO: if first move of game and difficulty above certain threshold, start sensibly (corner or middle)
+            // TODO: if first move of game and difficulty above certain threshold, start sensibly (corner or middle),
+            // just to offer a hypothetical human opponent more chances to make a bad move
             int _ = Minimax(state, state.IsFirstPlayersTurn, Difficulty, true, out (int, int) bestMove, true);
             return bestMove;
         }

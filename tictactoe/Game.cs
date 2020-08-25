@@ -6,7 +6,7 @@ namespace tictactoe
     public sealed class Game
     {
         /// <summary>
-        /// Stores the default symbol for an empty space on the board.
+        /// The default symbol for an empty space on the board.
         /// </summary>
         private const char emptySymbol = ' ';
         public static char EmptySymbol { get => emptySymbol; }
@@ -14,6 +14,8 @@ namespace tictactoe
         public GameState State { get; private set; }
         public Player Player1 { get; private set; }
         public Player Player2 { get; private set; }
+        public Player CurrentPlayer { get { return State.IsFirstPlayersTurn ? Player1 : Player2; } }
+        public Player OtherPlayer { get { return State.IsFirstPlayersTurn ? Player2 : Player1; } }
 
         /// <summary>
         /// Creates a new instance of Game with a clean board.
@@ -43,32 +45,12 @@ namespace tictactoe
         }
 
         /// <summary>
-        /// Returns the player whose turn it currently is.
-        /// </summary>
-        /// <returns>Player 1 if it is Player 1's turn, PLayer 2 otherwise</returns>
-        public Player GetCurrentPlayer()
-        {
-            return State.IsFirstPlayersTurn ? Player1 : Player2;
-        }
-
-        /// <summary>
-        /// Returns the player whose turn it currently isn't.
-        /// </summary>
-        /// <returns>Player 2 if it is Player 1's turn, Player 1 otherwise</returns>
-        public Player GetOtherPlayer()
-        {
-            return State.IsFirstPlayersTurn ? Player2 : Player1;
-        }
-
-        /// <summary>
-        /// Plays out the next move and switch players.
+        /// Plays out the next move and switches players.
         /// </summary>
         public void PlayNextTurn()
         {
-            Player currentPlayer = GetCurrentPlayer();
-            (int, int) nextMove = currentPlayer.GetNextMove(State);
-            UpdateBoard(nextMove);
-            State.IsFirstPlayersTurn = !State.IsFirstPlayersTurn;
+            (int, int) nextMove = CurrentPlayer.GetNextMove(State);
+            State.PlayMove(nextMove);
         }
 
         /// <summary>
@@ -91,7 +73,7 @@ namespace tictactoe
         /// </summary>
         public string GetBoardString()
         {
-            StringBuilder boardBuilder = new StringBuilder(11);
+            StringBuilder boardBuilder = new StringBuilder(12);
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -108,15 +90,6 @@ namespace tictactoe
                 boardBuilder.Append("\n");
             }
             return boardBuilder.ToString().Trim('\n');
-        }
-
-        private void UpdateBoard((int, int) move)
-        {
-            if (!State.IsLegalMove(move))
-            {
-                throw new ArgumentException();
-            }
-            State.Board[move.Item1, move.Item2] = State.IsFirstPlayersTurn;
         }
     }
 }
