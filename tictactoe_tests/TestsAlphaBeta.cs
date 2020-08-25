@@ -6,7 +6,7 @@ namespace tictactoe_tests
     [TestFixture]
     class TestsAlphaBeta
     {
-        private const int iterations = 1000;
+        private const int iterations = 20;
 
         // quietly play a whole game between two AIs,
         // return 0 if the game was a draw, 1 if player 1 won and -1 if player 2 won
@@ -36,7 +36,7 @@ namespace tictactoe_tests
         public void PlayerAIAlphaBeta9_vsPlayerAIRandom_NeverLoses()
         {
             // Arrange
-            Player alphabeta = new PlayerAIMinimax('X', "AlphaBeta", 10);
+            Player alphabeta = new PlayerAIAlphaBeta('X', "AlphaBeta", 10);
             Player random = new PlayerAIRandom('O', "Random");
 
             // Act & Assert

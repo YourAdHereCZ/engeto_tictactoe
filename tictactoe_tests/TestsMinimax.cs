@@ -6,7 +6,7 @@ namespace tictactoe_tests
     [TestFixture]
     class TestsMinimax
     {
-        private const int iterations = 1000;
+        private const int iterations = 20;
 
         // quietly simulate a whole game between two AIs,
         // return 0 if the game was a draw, 1 if player 1 won and -1 if player 2 won
