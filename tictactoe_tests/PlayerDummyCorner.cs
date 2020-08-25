@@ -7,14 +7,14 @@ namespace tictactoe_tests
     // it doesn't check for validity as it is only meant to be used for the first move of a test game
     public class PlayerDummyCorner : Player
     {
-        private static Random rand = new Random();
+        private static readonly Random rand = new Random();
 
         public PlayerDummyCorner() : base('C', "Corner-playing dummy", false)
         {
         }
 
-        public override (int, int) GetNextMove(char[,] gameBoard, char player, char opponent)
-        {            
+        public override (int, int) GetNextMove(GameState _)
+        {   
             (int, int)[] cornerMoves = {(0,0),(0,2),(2,0),(2,2)};
             int randomCorner = rand.Next(4);
             return cornerMoves[randomCorner];

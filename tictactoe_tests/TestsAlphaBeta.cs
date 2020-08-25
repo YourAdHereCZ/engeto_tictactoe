@@ -14,12 +14,12 @@ namespace tictactoe_tests
         {
             Game quietGame = new Game(player1, player2, true);
 
-            while (!quietGame.IsFinal)
+            while (!quietGame.State.IsFinal)
             {
                 quietGame.PlayNextTurn();
             }
 
-            if (quietGame.IsTie)
+            if (quietGame.State.IsDraw)
             {
                 return 0;
             }

@@ -10,14 +10,9 @@ namespace tictactoe
         {
         }
 
-        public override (int, int) GetNextMove(char[,] gameBoard, char _, char __)
+        public override (int, int) GetNextMove(GameState state)
         {
-            return PickRandomLegalMove(gameBoard);
-        }
-
-        private (int, int) PickRandomLegalMove(char[,] gameBoard)
-        {
-            var moves = Utils.GetAllLegalMoves(gameBoard);
+            var moves = state.GetAllLegalMoves();
             int rand = rnd.Next(moves.Count);
             (int, int) randomLegalMove = moves[rand];
             return randomLegalMove;

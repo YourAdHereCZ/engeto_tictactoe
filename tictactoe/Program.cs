@@ -10,7 +10,7 @@ namespace tictactoe
                 + "\n1) (E)asy - picks random moves [default]"
                 + "\n2) (M)oderate"
                 + "\n3) (H)ard"
-                + "\n4) (E)xtreme");
+                + "\n4) e(X)treme");
 
             string response = Console.ReadLine().Trim(' ').ToLower();
             if (response == "2" || response == "m" || response == "moderate")
@@ -21,9 +21,9 @@ namespace tictactoe
             {
                 return new PlayerAIMinimax(symbol, name, 5);
             }
-            else if (response == "4" || response == "e" || response == "extreme")
+            else if (response == "4" || response == "x" || response == "extreme")
             {
-                return new PlayerAIMinimax(symbol, name, 6);
+                return new PlayerAIMinimax(symbol, name, 9);
             }
             return new PlayerAIRandom(symbol, name);
         }
@@ -46,7 +46,6 @@ namespace tictactoe
             }
             else if (response == "4" || response == "q" || response == "quit")
             {
-                //Console.WriteLine("Come again!");
                 return 4; 
             }
             return 1;
@@ -159,7 +158,7 @@ namespace tictactoe
                     game = new Game(playerOne, playerTwo, firstPlayerStarts);
                     game.PrintBoard();
 
-                    while (!game.IsFinal)
+                    while (!game.State.IsFinal)
                     {
                         if (!game.GetCurrentPlayer().IsHuman)
                         {
@@ -171,7 +170,7 @@ namespace tictactoe
                         game.PrintBoard();
                     }
 
-                    Console.WriteLine(game.IsWon ? game.GetCurrentPlayer().Name + " wins!" : "It's a tie!");
+                    Console.WriteLine(game.State.IsWon ? game.GetOtherPlayer().Name + " wins!" : "It's a tie!");
                     Console.WriteLine("Play again? (Y)es / (n)o / (c)hange mode");
 
                     string response = Console.ReadLine().ToLower();

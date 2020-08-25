@@ -8,22 +8,22 @@ namespace tictactoe_tests
     {
         private const int iterations = 300;
 
-        // quietly play a whole game between two AIs,
+        // quietly simulate a whole game between two AIs,
         // return 0 if the game was a draw, 1 if player 1 won and -1 if player 2 won
-        private int QuietGame(Player player1, Player player2)
+        private int SimulateGame(Player player1, Player player2)
         {
             Game quietGame = new Game(player1, player2, true);
 
-            while (!quietGame.IsFinal)
+            while (!quietGame.State.IsFinal)
             {
                 quietGame.PlayNextTurn();
             }
 
-            if (quietGame.IsTie)
+            if (quietGame.State.IsDraw)
             {
                 return 0;
             }
-            if (quietGame.GetCurrentPlayer() == player1)
+            if (quietGame.GetOtherPlayer() == player1)
             {
                 return 1;
             }
@@ -42,12 +42,12 @@ namespace tictactoe_tests
             // Act & Assert
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(QuietGame(minimax, random), Is.Not.EqualTo(-1));
+                Assert.That(SimulateGame(minimax, random), Is.Not.EqualTo(-1));
             }
 
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(QuietGame(random, minimax), Is.Not.EqualTo(1));
+                Assert.That(SimulateGame(random, minimax), Is.Not.EqualTo(1));
             }
         }
 
@@ -62,13 +62,19 @@ namespace tictactoe_tests
             // Act & Assert
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(QuietGame(minimax1, minimax2), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
+                Assert.That(SimulateGame(minimax1, minimax2), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
             }
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(QuietGame(minimax2, minimax1), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
+                Assert.That(SimulateGame(minimax2, minimax1), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
             }
         }
+
+
+        // more test ideas:
+        // higher difficulty minimax should always win more than lose against lower difficulty?
+        // create situations that are 100% winnable, test whether minimax always wins them?
+        // 
         #endregion
     }
 }

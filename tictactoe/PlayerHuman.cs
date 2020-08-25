@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 
 namespace tictactoe
 {
@@ -8,55 +9,50 @@ namespace tictactoe
         {
         }
 
-        public override (int, int) GetNextMove(char[,] gameBoard, char _, char __)
+        public override (int, int) GetNextMove(GameState state)
         {
             (int, int) nextMove;
             bool isLegal;
             do
             {
                 nextMove = ReadHumanMoveFromInput();
-                isLegal = Utils.IsLegalMove(nextMove, gameBoard);
+                isLegal = state.IsLegalMove(nextMove);
 
                 if (!isLegal)
                 {
                     Console.WriteLine("Illegal move.");
                 }
             }
-            while (!Utils.IsLegalMove(nextMove, gameBoard));
+            while (!isLegal);
 
             return nextMove;
         }
 
         private (int, int) ReadHumanMoveFromInput()
         {
-            bool tryParse;
-            int row;
-            do
+            static int ReadMove()
             {
-                Console.Write("Row: ");
-                tryParse = int.TryParse(Console.ReadLine(), out row);
-                if (!tryParse)
+                int result;
+                bool tryParse;
+                do
                 {
-                    Console.WriteLine("You need to specify an integer. ");
+                    tryParse = int.TryParse(Console.ReadLine(), out result);
+                    if (!tryParse)
+                    {
+                        Console.WriteLine("You need to specify an integer. ");
+                    }
                 }
+                while (!tryParse);
+                return result;
             }
-            while (!tryParse);
 
-            int col;
-            do
-            {
-                Console.Write("Column: ");
-                tryParse = int.TryParse(Console.ReadLine(), out col);
-                if (!tryParse)
-                {
-                    Console.Write("You need to specify an integer. ");
-                }
-            }
-            while (!tryParse);
-
+            Console.Write("Row: ");
+            int row = ReadMove();
+            Console.Write("Column: ");
+            int col = ReadMove();
             return (row - 1 , col - 1);
-            // moves are expected from the player as 1-indexed but stored as 0-indexed
-            // so this is the only place we need to do any "off by one" magic
+            // moves are expected from the player as 1-indexed but stored as 0-indexed;
+            // this should be the only place where we need to do any "off-by-one" magic
         }
     }
 }

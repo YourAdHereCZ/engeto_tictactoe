@@ -8,7 +8,7 @@ namespace tictactoe
         {
         }
 
-        public override (int, int) GetNextMove(char[,] gameBoard, char player, char opponent)
+        public override (int, int) GetNextMove(GameState state)
         {
             throw new NotImplementedException();
         }
