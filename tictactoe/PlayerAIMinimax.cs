@@ -6,39 +6,13 @@ namespace tictactoe
 {
     public class PlayerAIMinimax : Player
     {
-        private static readonly Random random = new Random();
+        protected static readonly Random random = new Random();
 
-        public int Difficulty { get; private set; }
+        public int Difficulty { get; protected set; }
 
         public PlayerAIMinimax(char symbol, string name, int difficulty) : base(symbol, name, false)
         {
             Difficulty = difficulty;
-        }
-
-        private bool?[,] GetBoardAfterMove((int, int) move, bool player, bool?[,] board)
-        {
-            bool?[,] result = new bool?[3, 3];
-
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    if (board[i, j] == null)
-                    {
-                        result[i, j] = null;
-                    }
-                    else if (board[i, j] == true)
-                    {
-                        result[i, j] = true;
-                    }
-                    else
-                    {
-                        result[i, j] = false;
-                    }
-                }
-            }
-            result[move.Item1, move.Item2] = player;
-            return result;
         }
 
         /// <summary>
@@ -59,22 +33,14 @@ namespace tictactoe
         /// so for instance it won't prefer paths where it could still theoretically win (if the opponent makes a mistake)
         /// over ones where it definitely can't - because it "expects" that the opponent won't allow the win to happen.
         /// </remarks>
-
-        private int Minimax(GameState state, bool player, int depth, bool isMaximizing, out (int, int) bestMove, bool isInitialCall = false)
+        protected int Minimax(GameState state, bool player, int depth, bool isMaximizing, out (int, int) bestMove, bool isInitialCall = false)
         {
             bestMove = (-1, -1);
 
             // evaluate the board and return a value if game over
             if (state.IsWon)
-            {   
-                if (state.IsWonByPlayerOne)
-                {
-                    return (player ? 1 : -1);
-                }
-                else
-                {
-                    return (player ? -1 : 1);
-                }
+            {
+                return state.IsWonByPlayerOne == player ? 1 : -1;
             }
             else if (state.IsDraw || depth == 0)
             {
@@ -82,21 +48,28 @@ namespace tictactoe
             }
 
             // for each legal move: create a new state from the current state and this move, 
-            //                      run recursively on the resulting state,
-            //                      add to list of scores
+            //      run recursively on the resulting state and add result to list of scores
             List<(int, int)> allMoves = state.GetAllLegalMoves();
             List<int> scores = new List<int>();
             foreach ((int, int) move in allMoves)
             {
-                var newBoard = GetBoardAfterMove(move, state.IsFirstPlayersTurn, state.Board);
-                scores.Add(Minimax((new GameState(!state.IsFirstPlayersTurn, newBoard)), player, depth - 1, !isMaximizing, out _));
+                state.Board[move.Item1, move.Item2] = state.IsFirstPlayersTurn;
+                state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
+
+                scores.Add(Minimax(state, player, depth - 1, !isMaximizing, out _));
+
+                state.Board[move.Item1, move.Item2] = null;
+                state.IsFirstPlayersTurn = !state.IsFirstPlayersTurn;
             }
 
             // now make a list of indices of scores that are best/worst
             // and use it to pick a score (and a move) at random
             // but do this only if the method is being called directly from GetNextMove
             // (i.e. we're not in a recursive call) to hopefully save some overhead;
-            // this could also be solved by wrapping the initial calls in a foreach(legalmoves) outside of the method
+            // this could also be solved by wrapping the initial calls in a foreach(legalmoves) outside of the method (i.e., in GetNextMove)
+            // and selecting the best move there - bestMove and isInitialCall wouldn't be needed,
+            // however this will lead to some code duplication, possibly worse reusability for alphabeta;
+            // TODO: needs to be benchmarked to evaluate the potential gain from refactoring
             int maxOrMin = isMaximizing ? scores.Max() : scores.Min();
             if (isInitialCall)
             {
@@ -118,7 +91,6 @@ namespace tictactoe
         public override (int, int) GetNextMove(GameState state)
         {
             // TODO: if first move of game and difficulty above certain threshold, start sensibly (corner or middle)
-
             int _ = Minimax(state, state.IsFirstPlayersTurn, Difficulty, true, out (int, int) bestMove, true);
             return bestMove;
         }

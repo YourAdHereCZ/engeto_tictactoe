@@ -6,7 +6,7 @@ namespace tictactoe_tests
     [TestFixture]
     class TestsMinimax
     {
-        private const int iterations = 300;
+        private const int iterations = 30;
 
         // quietly simulate a whole game between two AIs,
         // return 0 if the game was a draw, 1 if player 1 won and -1 if player 2 won
@@ -32,26 +32,6 @@ namespace tictactoe_tests
 
         #region Minimax tests
         [Test]
-        // If we let a perfect minimaxing AI play against an AI that picks randomly, the minimaxer should never lose.
-        public void PlayerAIMinimax9_vsPlayerAIRandom_NeverLoses()
-        {
-            // Arrange
-            Player minimax = new PlayerAIMinimax('X', "Minimax", 9);
-            Player random = new PlayerAIRandom('O', "Random");
-
-            // Act & Assert
-            for (int i = 0; i < iterations; i++)
-            {
-                Assert.That(SimulateGame(minimax, random), Is.Not.EqualTo(-1));
-            }
-
-            for (int i = 0; i < iterations; i++)
-            {
-                Assert.That(SimulateGame(random, minimax), Is.Not.EqualTo(1));
-            }
-        }
-
-        [Test]
         // If we let two perfect minimaxing AIs play against each other, they should always tie.
         public void PlayerAIMinimax9_vsPlayerAIMinimax9_AlwaysATie()
         {
@@ -70,6 +50,25 @@ namespace tictactoe_tests
             }
         }
 
+        [Test]
+        // If we let a perfect minimaxing AI play against an AI that picks randomly, the minimaxer should never lose.
+        public void PlayerAIMinimax9_vsPlayerAIRandom_NeverLoses()
+        {
+            // Arrange
+            Player minimax = new PlayerAIMinimax('X', "Minimax", 9);
+            Player random = new PlayerAIRandom('O', "Random");
+
+            // Act & Assert
+            for (int i = 0; i < iterations; i++)
+            {
+                Assert.That(SimulateGame(minimax, random), Is.Not.EqualTo(-1));
+            }
+
+            for (int i = 0; i < iterations; i++)
+            {
+                Assert.That(SimulateGame(random, minimax), Is.Not.EqualTo(1));
+            }
+        }
 
         // more test ideas:
         // higher difficulty minimax should always win more than lose against lower difficulty?

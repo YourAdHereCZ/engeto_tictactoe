@@ -11,7 +11,7 @@ namespace tictactoe
         /// true  = player 1, 
         /// false = player 2, 
         /// </summary>
-        public bool?[,] Board { get; private set; }
+        public bool?[,] Board { get; internal set; }
 
         /// <summary>
         /// Returns true if the board is won by player one, false otherwise.
@@ -68,10 +68,10 @@ namespace tictactoe
         }
 
         /// <summary>
-        /// Checks whether a move is legal (i.e. unoccupied) on this board.
+        /// Checks whether a move is legal on this board.
         /// </summary>
         /// <param name="move"></param>
-        /// <returns></returns>
+        /// <returns>True if the move is legal, false otherwise.</returns>
         public bool IsLegalMove((int, int) move)
         {
             int row = move.Item1;

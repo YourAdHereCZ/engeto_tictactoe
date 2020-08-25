@@ -23,7 +23,7 @@ namespace tictactoe
             }
             else if (response == "4" || response == "x" || response == "extreme")
             {
-                return new PlayerAIMinimax(symbol, name, 9);
+                return new PlayerAIMinimax(symbol, name, 10);
             }
             return new PlayerAIRandom(symbol, name);
         }
