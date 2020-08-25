@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace tictactoe
 {    
@@ -14,6 +15,31 @@ namespace tictactoe
         /// false = player 2
         /// </remarks>
         public bool?[,] Board { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder boardBuilder = new StringBuilder(12);
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (!Board[i, j].HasValue)
+                    {
+                        boardBuilder.Append(' ');
+                    }
+                    else
+                    {
+                        boardBuilder.Append((bool)Board[i, j] ? 'X' : 'O');
+                    }
+                }
+                boardBuilder.Append("\n");
+            }
+            return boardBuilder.ToString().Trim('\n');
+        }
 
         /// <summary>
         /// Returns true if the board is won by player one, false otherwise.
@@ -118,11 +144,6 @@ namespace tictactoe
             return legalMoves;
         }
 
-        internal void SwitchPlayers()
-        {
-            IsFirstPlayersTurn = !IsFirstPlayersTurn;
-        }
-
         internal void PlayMove((int, int) move)
         {
             if (!IsLegalMove(move))
@@ -141,6 +162,11 @@ namespace tictactoe
             }
             Board[move.Item1, move.Item2] = null;
             SwitchPlayers();
+        }
+
+        private void SwitchPlayers()
+        {
+            IsFirstPlayersTurn = !IsFirstPlayersTurn;
         }
 
         private bool GetIsFull()

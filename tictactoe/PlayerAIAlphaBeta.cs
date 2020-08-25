@@ -29,21 +29,15 @@ namespace tictactoe
         /// so for instance it won't prefer paths where it could still theoretically win (if the opponent makes a mistake)
         /// over ones where it definitely can't - because it "expects" that the opponent won't allow the win to happen.
         /// </remarks>
-        private int Minimax(GameState state, bool player, int depth, bool isMaximizing, int alpha, int beta, out (int, int) bestMove, bool isInitialCall = false)
+        private int MinimaxAlphaBeta(GameState state, bool player, int depth, bool isMaximizing, int alpha, int beta, out (int, int) bestMove, bool isInitialCall = false)
         {
             bestMove = (-1, -1);
 
             // evaluate the board and return a value if game over
             if (state.IsWon)
             {
-                if (state.IsWonByPlayerOne)
-                {
-                    return (player ? 1 : -1);
-                }
-                else
-                {
-                    return (player ? -1 : 1);
-                }
+                Console.WriteLine("evaluated to " + (state.IsWonByPlayerOne == player ? 1 : -1).ToString()+ ":\n" + state.ToString() + "\n");
+                return state.IsWonByPlayerOne == player ? 1 : -1;
             }
             else if (state.IsDraw || depth == 0)
             {
@@ -55,7 +49,6 @@ namespace tictactoe
             List<(int, int)> allMoves = state.GetAllLegalMoves();
             List<int> scores = new List<int>();
             int score;
-            int maxOrMin;
             if (isMaximizing)
             {
                 int highestScore = int.MinValue;
@@ -63,21 +56,18 @@ namespace tictactoe
                 {
                     state.PlayMove(move);
 
-                    score = Minimax(state, player, depth - 1, !isMaximizing, alpha, beta, out _);
+                    score = MinimaxAlphaBeta(state, player, depth - 1, false, alpha, beta, out _);
+                    scores.Add(score);
 
                     state.UndoMove(move);
 
                     highestScore = Math.Max(highestScore, score);
                     alpha = Math.Max(alpha, highestScore);
 
-                    scores.Add(score);
-
-                    if (beta <= alpha)
+                    if (beta < alpha)
                     {
                         break;
                     }
-
-
                 }
             }
             else
@@ -85,23 +75,20 @@ namespace tictactoe
                 int lowestScore = int.MaxValue;
                 foreach ((int, int) move in allMoves)
                 {
-                    state.PlayMove(move);
-                    
+                    state.PlayMove(move);                    
 
-                    score = Minimax(state, player, depth - 1, !isMaximizing, out _);
+                    score = MinimaxAlphaBeta(state, player, depth - 1, true, alpha, beta, out _);
+                    scores.Add(score);
 
                     state.UndoMove(move);
 
                     lowestScore = Math.Min(lowestScore, score);
-                    alpha = Math.Min(alpha, lowestScore);
+                    beta = Math.Min(beta, lowestScore);
 
-                    scores.Add(score);
-
-                    if (beta <= alpha)
+                    if (beta < alpha)
                     {
                         break;
-                    }
-
+                    }                    
                 }
             }
 
@@ -113,18 +100,21 @@ namespace tictactoe
             // and selecting the best move there - bestMove and isInitialCall wouldn't be needed,
             // however this will lead to some code duplication, possibly worse reusability for alphabeta;
             // TODO: needs to be benchmarked to evaluate the potential gain from refactoring
-            maxOrMin = isMaximizing ? scores.Max() : scores.Min();
+            int maxOrMin = isMaximizing ? scores.Max() : scores.Min();
             if (isInitialCall)
             {
                 List<int> indices = new List<int>();
 
+                Console.Write("scores: ");
                 for (int i = 0; i < scores.Count; i++)
                 {
+                    Console.Write(scores[i].ToString() + ", ");
                     if (scores[i] == maxOrMin)
                     {
                         indices.Add(i);
                     }
                 }
+                Console.WriteLine();
                 var randomBestIndex = indices[random.Next(indices.Count)];
                 bestMove = allMoves[randomBestIndex];
             }
@@ -133,7 +123,7 @@ namespace tictactoe
 
         public override (int, int) GetNextMove(GameState state)
         {
-            int _ = Minimax(state, state.IsFirstPlayersTurn, Difficulty, true, int.MaxValue, int.MinValue, out (int, int) bestMove, true);
+            int _ = MinimaxAlphaBeta(state, state.IsFirstPlayersTurn, Difficulty, true, int.MinValue, int.MaxValue, out (int, int) bestMove, true);
             return bestMove;
         }
     }
