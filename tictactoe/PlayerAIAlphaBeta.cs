@@ -12,7 +12,9 @@ namespace tictactoe
         }
 
         /// <summary>
-        /// 
+        /// Run the minimax algorithm with alpha-beta pruning on the state up to the specified depth and return its score 
+        /// by recursively computing the score for all possible resulting states.
+        /// The out parameter of the root call will contain a random best move for the maximizing player.
         /// </summary>
         /// <param name="state">The state to evaluate.</param>
         /// <param name="player">Stores the maximizing player.</param>
@@ -36,7 +38,7 @@ namespace tictactoe
             // evaluate the board and return a value if game over
             if (state.IsWon)
             {
-                Console.WriteLine("evaluated to " + (state.IsWonByPlayerOne == player ? 1 : -1).ToString()+ ":\n" + state.ToString() + "\n");
+                //Console.WriteLine("evaluated to " + (state.IsWonByPlayerOne == player ? 1 : -1).ToString()+ ":\n" + state.ToString() + "\n");
                 return state.IsWonByPlayerOne == player ? 1 : -1;
             }
             else if (state.IsDraw || depth == 0)
@@ -49,6 +51,7 @@ namespace tictactoe
             List<(int, int)> allMoves = state.GetAllLegalMoves();
             List<int> scores = new List<int>();
             int score;
+
             if (isMaximizing)
             {
                 int highestScore = int.MinValue;
@@ -64,6 +67,9 @@ namespace tictactoe
                     highestScore = Math.Max(highestScore, score);
                     alpha = Math.Max(alpha, highestScore);
 
+                    // almost all the implementations on the web do the cutoff when beta <= alpha, 
+                    // but in our case the only way to prevent the cutoff from happening too soon is beta < alpha;
+                    // I think this may be because we're only really using three values (-1, 0, 1) to decide on
                     if (beta < alpha)
                     {
                         break;
@@ -105,16 +111,13 @@ namespace tictactoe
             {
                 List<int> indices = new List<int>();
 
-                Console.Write("scores: ");
                 for (int i = 0; i < scores.Count; i++)
                 {
-                    Console.Write(scores[i].ToString() + ", ");
                     if (scores[i] == maxOrMin)
                     {
                         indices.Add(i);
                     }
                 }
-                Console.WriteLine();
                 var randomBestIndex = indices[random.Next(indices.Count)];
                 bestMove = allMoves[randomBestIndex];
             }

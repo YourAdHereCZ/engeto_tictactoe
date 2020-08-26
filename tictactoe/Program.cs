@@ -25,9 +25,9 @@ namespace tictactoe
             {
                 return new PlayerAIMinimax(symbol, name, 9);
             }
-            else if (response == "5")
+            else if (response == "5") 
             {
-                return new PlayerAIAlphaBeta(symbol, name, 10);
+                return new PlayerAIAlphaBeta(symbol, name, 9);
             }
             return new PlayerAIRandom(symbol, name);
         }
@@ -66,13 +66,15 @@ namespace tictactoe
                 playerTwoName = Console.ReadLine();
             }
         }
-        private static void UserPicksPlayerSymbols(string playerOneName, string playerTwoName, ref char playerOneSymbol, ref char playerTwoSymbol)
+        private static void UserPicksPlayerSymbols(string playerOneName, string playerTwoName, out char playerOneSymbol, out char playerTwoSymbol)
         {
+            playerOneSymbol = 'X';
+            playerTwoSymbol = 'O';
+
             Console.Write("Would you like to select players' symbols? y/N ");
             string response = Console.ReadLine().ToLower();
             if (response == "y" || response == "yes")
             {
-                // TODO: refactor
                 response = "";
                 while (response.Length == 0)
                 {
@@ -85,13 +87,22 @@ namespace tictactoe
                     Console.WriteLine("More than one character specified. The first character (\'" + playerOneSymbol + "\') will be used.");
                 }
 
-                response = "";
-                while (response.Length == 0)
+                playerTwoSymbol = playerOneSymbol;
+                while (response.Length == 0 || playerTwoSymbol == playerOneSymbol) 
                 {
                     Console.Write("Select the symbol for " + playerTwoName + ": ");
                     response = Console.ReadLine();
+                    
+                    if (response.Length != 0)
+                    {
+                        playerTwoSymbol = response[0];
+                    }
+                    if (playerTwoSymbol == playerOneSymbol)
+                    {
+                        Console.WriteLine("The players' symbols must be unique.");
+                    }
                 }
-                playerTwoSymbol = response[0];
+                
                 if (response.Length > 1)
                 {
                     Console.WriteLine("More than one character specified. The first character (\'" + playerTwoSymbol + "\') will be used.");
@@ -121,8 +132,8 @@ namespace tictactoe
                 string playerOneName = "Player 1";
                 string playerTwoName = "Player 2";
 
-                char playerOneSymbol = 'X';
-                char playerTwoSymbol = 'O';
+                char playerOneSymbol;
+                char playerTwoSymbol;
 
                 bool firstPlayerStarts;
 
@@ -132,7 +143,7 @@ namespace tictactoe
                 int gameMode = UserPicksGameMode();
                 if (gameMode == 4) break;
                 UserPicksPlayerNames(ref playerOneName, ref playerTwoName);
-                UserPicksPlayerSymbols(playerOneName, playerTwoName, ref playerOneSymbol, ref playerTwoSymbol);
+                UserPicksPlayerSymbols(playerOneName, playerTwoName, out playerOneSymbol, out playerTwoSymbol);
                 firstPlayerStarts = UserPicksWhoStarts(playerOneName);
                 // TODO: who starts next round?
 

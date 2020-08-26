@@ -16,7 +16,9 @@ namespace tictactoe
         }
 
         /// <summary>
-        /// 
+        /// Run the minimax algorithm (no pruning) on the state up to the specified depth and return its score 
+        /// by recursively computing the score for all possible resulting states.
+        /// The out parameter of the root call will contain a random best move for the maximizing player.
         /// </summary>
         /// <param name="state">The state to evaluate.</param>
         /// <param name="player">The maximizing player.</param>
@@ -47,7 +49,7 @@ namespace tictactoe
                 return 0;
             }
 
-            // for each legal move: play the move, run recursively on the resulting state, revert move
+            // for each legal move: play the move, run recursively on the resulting state, revert the move
             List<(int, int)> allMoves = state.GetAllLegalMoves();
             List<int> scores = new List<int>();
             foreach ((int, int) move in allMoves)
