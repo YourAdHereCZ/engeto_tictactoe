@@ -38,16 +38,20 @@ namespace tictactoe
             // evaluate the board and return a value if game over
             if (state.IsWon)
             {
-                //Console.WriteLine("evaluated to " + (state.IsWonByPlayerOne == player ? 1 : -1).ToString()+ ":\n" + state.ToString() + "\n");
-                return state.IsWonByPlayerOne == player ? 1 : -1;
+                return state.IsWonByPlayerOne == player ? 100 + depth : -100 - depth;
+                // depth is actually lower the deeper we go, so higher depth means an earlier win and will result in a better score (and vice versa)
             }
-            else if (state.IsDraw || depth == 0)
+            else if (state.IsDraw)
+            {
+                return depth;
+            }
+            else if (depth == 0)
             {
                 return 0;
+                // this is where we could provide a better heuristic to evaluate the board
             }
 
-            // for each legal move: create a new state from the current state and this move, 
-            //      run recursively on the resulting state and add result to list of scores
+            // for each legal move: play the move, run recursively on the resulting state, revert the move
             List<(int, int)> allMoves = state.GetAllLegalMoves();
             List<int> scores = new List<int>();
             int score;
@@ -68,8 +72,8 @@ namespace tictactoe
                     alpha = Math.Max(alpha, highestScore);
 
                     // almost all the implementations on the web do the cutoff when beta <= alpha, 
-                    // but in our case the only way to prevent the cutoff from happening too soon is beta < alpha;
-                    // I think this may be because we're only really using three values (-1, 0, 1) to decide on
+                    // but in our case the only way to prevent the cutoff from happening when it shouldn't is beta < alpha;
+                    // TODO: why is that?
                     if (beta < alpha)
                     {
                         break;

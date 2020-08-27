@@ -15,17 +15,13 @@ namespace tictactoe
             string response = Console.ReadLine().Trim(' ').ToLower();
             if (response == "2" || response == "m" || response == "moderate")
             {
-                return new PlayerAIMinimax(symbol, name, 4);
+                return new PlayerAIAlphaBeta(symbol, name, 4);
             }
             else if(response == "3" || response == "h" || response == "hard")
             {
-                return new PlayerAIMinimax(symbol, name, 5);
+                return new PlayerAIAlphaBeta(symbol, name, 5);
             }
             else if (response == "4" || response == "x" || response == "extreme")
-            {
-                return new PlayerAIMinimax(symbol, name, 9);
-            }
-            else if (response == "5") 
             {
                 return new PlayerAIAlphaBeta(symbol, name, 9);
             }

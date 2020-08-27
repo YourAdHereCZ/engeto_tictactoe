@@ -6,7 +6,7 @@ namespace tictactoe_tests
     [TestFixture]
     class TestsAlphaBeta
     {
-        private const int iterations = 50;
+        private const int iterations = 500;
 
         // quietly play a whole game between two AIs,
         // return 0 if the game was a draw, 1 if player 1 won and -1 if player 2 won
@@ -51,6 +51,7 @@ namespace tictactoe_tests
             }
         }
 
+        /*
         [Test]
         // minimax with AlphaBeta with sufficient depth will always draw against itself
         public void PlayerAIAlphaBeta9_vsPlayerAIAlphaBeta9_AlwaysATie()
@@ -89,6 +90,7 @@ namespace tictactoe_tests
                 Assert.That(SimulateGame(alphabeta, minimax), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
             }
         }
+        */
         #endregion
     }
 }
