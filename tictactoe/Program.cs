@@ -54,22 +54,27 @@ namespace tictactoe
             }
             return 1;
         }
-        private static void UserPicksPlayerNames(ref string playerOneName, ref string playerTwoName)
+        private static (string, string) UserPicksPlayerNames()
         {
+
+            string playerOneName = "Player 1";
+            string playerTwoName = "Player 2";
+
             Console.Write("Would you like to select players' names? y/N ");
             string response = Console.ReadLine().Trim(' ').ToLower();
             if (response == "y" || response == "yes")
             {
-                Console.Write("Type the name for player 1: ");
+                Console.Write("Type the name for " + playerOneName + ": ");
                 playerOneName = Console.ReadLine();
-                Console.Write("Type the name for player 2: ");
+                Console.Write("Type the name for " + playerTwoName + ": ");
                 playerTwoName = Console.ReadLine();
             }
+            return (playerOneName, playerTwoName);
         }
-        private static void UserPicksPlayerSymbols(string playerOneName, string playerTwoName, out char playerOneSymbol, out char playerTwoSymbol)
+        private static (char, char) UserPicksPlayerSymbols((string first, string second) playersNames)
         {
-            playerOneSymbol = 'X';
-            playerTwoSymbol = 'O';
+            char playerOneSymbol = 'X';
+            char playerTwoSymbol = 'O';
 
             Console.Write("Would you like to select players' symbols? y/N ");
             string response = Console.ReadLine().ToLower();
@@ -78,7 +83,7 @@ namespace tictactoe
                 response = "";
                 while (response.Length == 0)
                 {
-                    Console.Write("Select the symbol for " + playerOneName + ": ");
+                    Console.Write("Select the symbol for " + playersNames.first + ": ");
                     response = Console.ReadLine();
                 }
                 playerOneSymbol = response[0];
@@ -90,7 +95,7 @@ namespace tictactoe
                 playerTwoSymbol = playerOneSymbol;
                 while (response.Length == 0 || playerTwoSymbol == playerOneSymbol) 
                 {
-                    Console.Write("Select the symbol for " + playerTwoName + ": ");
+                    Console.Write("Select the symbol for " + playersNames.second + ": ");
                     response = Console.ReadLine();
                     
                     if (response.Length != 0)
@@ -108,6 +113,7 @@ namespace tictactoe
                     Console.WriteLine("More than one character specified. The first character (\'" + playerTwoSymbol + "\') will be used.");
                 }
             }
+            return (playerOneSymbol, playerTwoSymbol);
         }
 
         private static bool UserPicksWhoStarts(string playerOneName)
@@ -129,37 +135,34 @@ namespace tictactoe
             
             while (continueGame)
             {
-                string playerOneName = "Player 1";
-                string playerTwoName = "Player 2";
+                int gameMode;
+                (string first, string second) playersNames;
+                (char first, char second) playersSymbols;
+                bool firstPlayerStarts;                
 
-                char playerOneSymbol;
-                char playerTwoSymbol;
-
-                bool firstPlayerStarts;
-
-                Player playerOne;
-                Player playerTwo;
-
-                int gameMode = UserPicksGameMode();
+                gameMode = UserPicksGameMode();
                 if (gameMode == 4) break;
-                UserPicksPlayerNames(ref playerOneName, ref playerTwoName);
-                UserPicksPlayerSymbols(playerOneName, playerTwoName, out playerOneSymbol, out playerTwoSymbol);
-                firstPlayerStarts = UserPicksWhoStarts(playerOneName);
+                playersNames = UserPicksPlayerNames();
+                playersSymbols = UserPicksPlayerSymbols(playersNames);
+                firstPlayerStarts = UserPicksWhoStarts(playersNames.first);
                 // TODO: who starts next round?
+                // keep / flip / winner / loser / random
+
+                (Player first, Player second) players;
 
                 switch (gameMode)
                 {
                     case 1:
-                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
-                        playerTwo = UserPicksAI(playerTwoSymbol, playerTwoName);
+                        players.first = new PlayerHuman(playersSymbols.first, playersNames.first);
+                        players.second = UserPicksAI(playersSymbols.second, playersNames.second);
                         break;
                     case 2:
-                        playerOne = new PlayerHuman(playerOneSymbol, playerOneName);
-                        playerTwo = new PlayerHuman(playerTwoSymbol, playerTwoName);
+                        players.first = new PlayerHuman(playersSymbols.first, playersNames.first);
+                        players.second = new PlayerHuman(playersSymbols.second, playersNames.second);
                         break;
                     case 3:
-                        playerOne = UserPicksAI(playerOneSymbol, playerOneName);
-                        playerTwo = UserPicksAI(playerTwoSymbol, playerTwoName);
+                        players.first = UserPicksAI(playersSymbols.first, playersNames.first);
+                        players.second = UserPicksAI(playersSymbols.second, playersNames.second);
                         break;
                     default:
                         throw new ArgumentException();
@@ -170,17 +173,17 @@ namespace tictactoe
 
                 while (playAgain)
                 {
-                    game = new Game(playerOne, playerTwo, firstPlayerStarts);
+                    game = new Game(players.first, players.second, firstPlayerStarts);
                     game.PrintBoard();
 
                     while (!game.State.IsFinal)
                     {
+                        Console.WriteLine(game.CurrentPlayer.Name + "'s turn: ");
                         if (!game.CurrentPlayer.IsHuman)
                         {
-                            Console.WriteLine("Press any key to let " + game.CurrentPlayer.Name + " play.");
-                            Console.ReadKey();
+                            System.Threading.Thread.Sleep(1500);
                         }
-                        Console.WriteLine(game.CurrentPlayer.Name + "'s turn");
+                        
                         game.PlayNextTurn();
                         game.PrintBoard();
                     }
@@ -197,7 +200,7 @@ namespace tictactoe
                     else if (response == "c" || response == "change")
                     {
                         playAgain = false;
-                    }
+                    }                    
                 }
             }            
             Console.WriteLine("Thank you for playing! Come again!");
