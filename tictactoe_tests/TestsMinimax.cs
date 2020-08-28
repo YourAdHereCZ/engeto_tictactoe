@@ -6,29 +6,8 @@ namespace tictactoe_tests
     [TestFixture]
     class TestsMinimax
     {
-        private const int iterations = 50;
+        private const int iterations = 200;
 
-        // quietly simulate a whole game between two AIs,
-        // return 0 if the game was a draw, 1 if player 1 won and -1 if player 2 won
-        private int SimulateGame(Player player1, Player player2)
-        {
-            Game quietGame = new Game(player1, player2, true);
-
-            while (!quietGame.State.IsFinal)
-            {
-                quietGame.PlayNextTurn();
-            }
-
-            if (quietGame.State.IsDraw)
-            {
-                return 0;
-            }
-            if (quietGame.OtherPlayer == player1)
-            {
-                return 1;
-            }
-            return -1;
-        }
 
         #region Minimax tests
         [Test]
@@ -42,11 +21,11 @@ namespace tictactoe_tests
             // Act & Assert
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(SimulateGame(minimax1, minimax2), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
+                Assert.That(TestsMain.SimulateGame(minimax1, minimax2), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
             }
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(SimulateGame(minimax2, minimax1), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
+                Assert.That(TestsMain.SimulateGame(minimax2, minimax1), Is.Not.EqualTo(-1).And.Not.EqualTo(1));
             }
         }
 
@@ -61,12 +40,30 @@ namespace tictactoe_tests
             // Act & Assert
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(SimulateGame(minimax, random), Is.Not.EqualTo(-1));
+                Assert.That(TestsMain.SimulateGame(minimax, random), Is.Not.EqualTo(-1));
             }
 
             for (int i = 0; i < iterations; i++)
             {
-                Assert.That(SimulateGame(random, minimax), Is.Not.EqualTo(1));
+                Assert.That(TestsMain.SimulateGame(random, minimax), Is.Not.EqualTo(1));
+            }
+        }
+
+
+        [Test]
+        // in a situation where a win can be forced, the AI must always force it
+        public void PlayerAIMinimax9_WinnableState_AlwaysForcesWin()
+        {
+            // Arrange
+            Player minimax1 = new PlayerAIMinimax('X', "Minimax 1", 9);
+            Player minimax2 = new PlayerAIMinimax('O', "Minimax 2", 9);
+
+            // Act & Assert
+            bool?[,] board;
+            for (int i = 0; i < iterations; i++)
+            {
+                board = new bool?[,] { { true, null, null }, { null, null, null }, { null, false, null } };
+                Assert.That(TestsMain.SimulateGameFromState(minimax1, minimax2, true, board), Is.Not.EqualTo(-1));
             }
         }
 

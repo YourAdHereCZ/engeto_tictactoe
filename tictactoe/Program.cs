@@ -46,7 +46,7 @@ namespace tictactoe
             }
             else if (response == "4" || response == "q" || response == "quit")
             {
-                return 4; 
+                return 4;
             }
             return 1;
         }
